@@ -32,7 +32,8 @@ public class JiraRetriever {
             URI uri = new URI(urlString) ;
             URL url = uri.toURL() ;
 
-            String jsonString = getJsonString(url) ;
+            JSONReader jsonReader = new JSONReader() ;
+            String jsonString = jsonReader.getJsonString(url) ;
             JSONObject jsonObject = new JSONObject(jsonString) ;
             JSONArray jsonIssueArray = jsonObject.getJSONArray("issues") ;
 
@@ -50,15 +51,16 @@ public class JiraRetriever {
         URI uri = new URI(urlString);
         URL url = uri.toURL();
 
-        String jsonString = getJsonString(url);
+        JSONReader jsonReader = new JSONReader() ;
+        String jsonString = jsonReader.getJsonString(url);
         JSONObject jsonObject = new JSONObject((jsonString));
         JSONArray jsonVersionArray = jsonObject.getJSONArray("versions");
 
         List<VersionInfo> versionInfoList = new ArrayList<>() ;
         for (int i = 0; i < jsonVersionArray.length(); i++) {
-            String versionName = "";
-            String dateString = "";
-            String versionId = "" ;
+            String versionName;
+            String dateString;
+            String versionId;
             if (jsonVersionArray.getJSONObject(i).has("releaseDate") && jsonVersionArray.getJSONObject(i).has("name") && jsonVersionArray.getJSONObject(i).has("id")) {
                 versionName = jsonVersionArray.getJSONObject(i).get("name").toString();
                 dateString = jsonVersionArray.getJSONObject(i).get("releaseDate").toString();
@@ -72,28 +74,12 @@ public class JiraRetriever {
 
         versionInfoList.sort(Comparator.comparing(VersionInfo::getVersionDate));
 
-        for (VersionInfo info : versionInfoList) {
-            Logger.getGlobal().log(Level.INFO, "Version >> " + info.getVersionName());
-        }
-
         return versionInfoList ;
     }
 
 
 
-    private String getJsonString(URL url) throws IOException {
-        try (InputStream urlInput = url.openStream()) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(urlInput)) ;
-            StringBuilder builder = new StringBuilder() ;
 
-            int c ;
-            while ( (c = reader.read()) != -1) {
-                builder.append((char) c) ;
-            }
-
-            return builder.toString() ;
-        }
-    }
 
     private void parseIssuesArray(ArrayList<String> issuesKeys, JSONArray jsonArray) {
         for (int i = 0 ; i < jsonArray.length() ; i++) {

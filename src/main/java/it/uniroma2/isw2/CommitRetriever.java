@@ -3,24 +3,29 @@ package it.uniroma2.isw2;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.RefDatabase;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.treewalk.TreeWalk;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CommitRetriever {
 
-    public List<RevCommit> retrieveAllCommitsInfo(String repoPath) throws IOException, GitAPIException {
+    Git git ;
+    Repository repo ;
+
+    public CommitRetriever(String repoPath) throws IOException {
         FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
-        Repository repo = repositoryBuilder.setGitDir(new File(repoPath + "/.git")).build() ;
-        Git git = new Git(repo) ;
+        this.repo = repositoryBuilder.setGitDir(new File(repoPath + "/.git")).build() ;
+        this.git = new Git(repo) ;
+    }
+
+    public List<RevCommit> retrieveAllCommitsInfo() throws GitAPIException {
+
         LogCommand logCommand = git.log() ;
         Iterable<RevCommit> commitIterable = logCommand.call() ;
 
@@ -33,11 +38,25 @@ public class CommitRetriever {
         return revCommitList ;
     }
 
+    public List<Ref> retrieveCommitForVersion() throws IOException {
+        List<String> commitList = new ArrayList<>() ;
 
-    public Map<String, ArrayList<String>> retrieveCommitFromTickets(List<String> ticketsIDs, String repoPath) throws GitAPIException, IOException {
-        FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
-        Repository repo = repositoryBuilder.setGitDir(new File(repoPath + "/.git")).build() ;
-        Git git = new Git(repo) ;
+        RefDatabase refDatabase = repo.getRefDatabase();
+        List<Ref> refList = refDatabase.getRefs() ;
+        List<Ref> filteredRefList = new ArrayList<>() ;
+        for (Ref ref: refList) {
+            if(ref.getName().contains("tags")) {
+                System.out.println(ref.getObjectId().getName() + " " + ref.getName());
+                filteredRefList.add(ref) ;
+            }
+        }
+
+        return filteredRefList ;
+    }
+
+
+    public Map<String, ArrayList<String>> retrieveCommitFromTickets(List<String> ticketsIDs) throws GitAPIException {
+
         LogCommand logCommand = git.log() ;
         Iterable<RevCommit> commitIterable = logCommand.call() ;
 

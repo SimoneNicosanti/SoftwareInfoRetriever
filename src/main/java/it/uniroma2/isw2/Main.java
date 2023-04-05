@@ -13,16 +13,17 @@ public class Main {
 
     private static final String PROJECT_NAME = "bookkeeper" ;
     public static void main(String[] args) throws IOException, URISyntaxException, GitAPIException {
-        String repoPath = "/home/simone/Scrivania/University/ISW2/Projects/" ;
+        String repoPath = "/home/simone/Scrivania/University/ISW2/Falessi/Projects/" ;
 
         JiraRetriever retriever = new JiraRetriever() ;
         List<String> list = retriever.retrieveBugTicket(PROJECT_NAME) ;
-        retriever.retrieveVersions(PROJECT_NAME) ;
+        List<VersionInfo> versionInfoList = retriever.retrieveVersions(PROJECT_NAME) ;
         Logger.getGlobal().log(Level.INFO, list.toString());
-        CommitRetriever commitRetriever = new CommitRetriever() ;
 
-        List<RevCommit> commitList = commitRetriever.retrieveAllCommitsInfo(repoPath + PROJECT_NAME);
+        CommitRetriever commitRetriever = new CommitRetriever(repoPath + PROJECT_NAME) ;
 
+        List<RevCommit> commitList = commitRetriever.retrieveAllCommitsInfo();
 
+        commitRetriever.retrieveCommitForVersion() ;
     }
 }
