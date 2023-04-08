@@ -1,29 +1,38 @@
 package it.uniroma2.isw2;
 
+import it.uniroma2.isw2.computer.TicketFilter;
+import it.uniroma2.isw2.computer.VersionsComputer;
+import it.uniroma2.isw2.model.TicketInfo;
+import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.retriever.CommitRetriever;
+import it.uniroma2.isw2.retriever.TicketRetriever;
+import it.uniroma2.isw2.retriever.VersionRetriever;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main {
 
     private static final String PROJECT_NAME = "bookkeeper" ;
+    private static final String PROJECT_PATH = "/home/simone/Scrivania/University/ISW2/Projects/" ;
     public static void main(String[] args) throws IOException, URISyntaxException, GitAPIException {
-        String repoPath = "/home/simone/Scrivania/University/ISW2/Falessi/Projects/" ;
 
-        JiraRetriever retriever = new JiraRetriever() ;
-        List<String> list = retriever.retrieveBugTicket(PROJECT_NAME) ;
-        List<VersionInfo> versionInfoList = retriever.retrieveVersions(PROJECT_NAME) ;
-        Logger.getGlobal().log(Level.INFO, list.toString());
+        VersionRetriever versionRetriever = new VersionRetriever(PROJECT_NAME) ;
+        List<VersionInfo> versionInfoList = versionRetriever.retrieveVersions() ;
 
-        CommitRetriever commitRetriever = new CommitRetriever(repoPath + PROJECT_NAME) ;
+        TicketRetriever ticketRetriever = new TicketRetriever(PROJECT_NAME) ;
+        List<TicketInfo> ticketInfoList = ticketRetriever.retrieveBugTicket(versionInfoList) ;
 
-        List<RevCommit> commitList = commitRetriever.retrieveAllCommitsInfo();
+        CommitRetriever commitRetriever = new CommitRetriever(PROJECT_PATH + PROJECT_NAME) ;
+        commitRetriever.retrieveFixCommitsForTickets(ticketInfoList) ;
 
-        commitRetriever.retrieveCommitForVersion() ;
+        VersionsComputer versionsComputer = new VersionsComputer() ;
+        versionsComputer.computeOpeningAndFixVersion(ticketInfoList, versionInfoList);
+
+        TicketFilter filter = new TicketFilter() ;
+        filter.filterTicket(ticketInfoList);
+
     }
 }

@@ -1,4 +1,4 @@
-package it.uniroma2.isw2;
+package it.uniroma2.isw2.builder;
 
 import org.json.JSONArray;
 
@@ -13,7 +13,7 @@ public class URLBuilder {
     private final String[] resolutionList = new String[] {"Fixed"} ;
 
     private final String[] priorityList = new String[] {} ;
-    private final String[] fieldsList = new String[] {"key", "startdate", "resolutiondate", "versions", "created"};
+    private final String[] fieldsList = new String[] {"key", "created", "versions"};
 
 
 
@@ -47,7 +47,10 @@ public class URLBuilder {
                 urlString.append("AND").append(urlPart);
             }
         }
-        return urlString + "&" + fieldsPart;
+        if (fieldsPart.length() > 0) {
+            urlString.append("&").append(fieldsPart) ;
+        }
+        return urlString.toString() ;
     }
 
     private String buildUrlPart(String filterName, String[] filterList) {

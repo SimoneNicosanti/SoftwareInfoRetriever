@@ -1,4 +1,6 @@
-package it.uniroma2.isw2;
+package it.uniroma2.isw2.model;
+
+import org.eclipse.jgit.lib.Ref;
 
 import java.time.LocalDate;
 
@@ -8,11 +10,15 @@ public class VersionInfo {
     private LocalDate versionDate ;
     private String versionId ;
 
+    private Integer releaseNumber ;
+    private Ref ref ;
+
 
     public VersionInfo(String versionName, LocalDate versionDate, String versionId) {
         this.versionName = versionName ;
         this.versionDate = versionDate ;
         this.versionId = versionId ;
+        this.ref = null ;
     }
 
     public LocalDate getVersionDate() {
@@ -29,5 +35,29 @@ public class VersionInfo {
 
     public void setVersionName(String versionName) {
         this.versionName = versionName;
+    }
+
+    public Ref getRef() {
+        return ref;
+    }
+
+    public void setRef(Ref ref) {
+        this.ref = ref;
+    }
+
+    public Integer getReleaseNumber() {
+        return releaseNumber;
+    }
+
+    public void setReleaseNumber(Integer releaseNumber) {
+        this.releaseNumber = releaseNumber;
+    }
+
+    public String getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(String versionId) {
+        this.versionId = versionId;
     }
 }

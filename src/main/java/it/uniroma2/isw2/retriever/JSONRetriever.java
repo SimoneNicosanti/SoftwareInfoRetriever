@@ -1,4 +1,4 @@
-package it.uniroma2.isw2;
+package it.uniroma2.isw2.retriever;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-public class JSONReader {
+public class JSONRetriever {
 
     public String getJsonString(URL url) throws IOException {
         try (InputStream urlInput = url.openStream()) {
