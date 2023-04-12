@@ -79,14 +79,8 @@ public class VersionRetriever {
         StringBuilder logString = new StringBuilder() ;
         logString.append("\nProject Versions\n") ;
         for (VersionInfo versionInfo : versionInfoList) {
-            logString
-                    .append("[")
-                    .append(versionInfo.getReleaseNumber())
-                    .append(" -- ")
-                    .append(versionInfo.getVersionName())
-                    .append(" -- ")
-                    .append(versionInfo.getVersionDate()).append("]\n") ;
+            logString.append(versionInfo.toString()).append("\n") ;
         }
-        Logger.getGlobal().log(Level.INFO, "{}", logString);
+        Logger.getGlobal().log(Level.INFO, "{0}", logString);
     }
 }

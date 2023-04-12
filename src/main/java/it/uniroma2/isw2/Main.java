@@ -1,7 +1,7 @@
 package it.uniroma2.isw2;
 
+import it.uniroma2.isw2.computer.ProportionComputer;
 import it.uniroma2.isw2.computer.TicketFilter;
-import it.uniroma2.isw2.computer.VersionsComputer;
 import it.uniroma2.isw2.model.TicketInfo;
 import it.uniroma2.isw2.model.VersionInfo;
 import it.uniroma2.isw2.retriever.CommitRetriever;
@@ -28,11 +28,11 @@ public class Main {
         CommitRetriever commitRetriever = new CommitRetriever(PROJECT_PATH + PROJECT_NAME) ;
         commitRetriever.retrieveFixCommitsForTickets(ticketInfoList) ;
 
-        VersionsComputer versionsComputer = new VersionsComputer() ;
-        versionsComputer.computeOpeningAndFixVersion(ticketInfoList, versionInfoList);
-
         TicketFilter filter = new TicketFilter() ;
-        filter.filterTicket(ticketInfoList);
+        List<TicketInfo> filteredList = filter.filterTicket(ticketInfoList);
+
+        ProportionComputer proportionComputer = new ProportionComputer() ;
+        proportionComputer.computeProportion(filteredList) ;
 
     }
 }

@@ -4,6 +4,8 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TicketInfo {
 
@@ -12,6 +14,7 @@ public class TicketInfo {
     private VersionInfo fixVersion ;
     private RevCommit fixCommit ;
     private LocalDate createDate ;
+    private LocalDate resolutionDate ;
     private List<VersionInfo> affectedVersionList ;
     private VersionInfo openingVersion ;
     private VersionInfo injectedVersion ;
@@ -80,4 +83,40 @@ public class TicketInfo {
     }
 
 
+    public LocalDate getResolutionDate() {
+        return resolutionDate;
+    }
+
+    public void setResolutionDate(LocalDate resolutionDate) {
+        this.resolutionDate = resolutionDate;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder() ;
+        stringBuilder.append(ticketId).append(" Created ").append(createDate.toString()).append(" Resolution ").append(resolutionDate.toString());
+
+        if (injectedVersion != null) {
+            stringBuilder.append(" Injected ").append(injectedVersion.getVersionName()) ;
+        }
+        else {
+            stringBuilder.append(" Injected ").append("NULL") ;
+        }
+
+        if (injectedVersion != null) {
+            stringBuilder.append(" Opening ").append(openingVersion.getVersionName()) ;
+        }
+        else {
+            stringBuilder.append(" Opening ").append("NULL") ;
+        }
+
+        if (injectedVersion != null) {
+            stringBuilder.append(" Fix ").append(fixVersion.getVersionName()) ;
+        }
+        else {
+            stringBuilder.append(" Fix ").append("NULL") ;
+        }
+
+        return stringBuilder.toString() ;
+    }
 }

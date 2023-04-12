@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,13 +35,14 @@ public class TicketRetriever {
         int issuesNumber ;
 
         List<TicketInfo> ticketInfoList = new ArrayList<>() ;
+
+        JSONRetriever jsonRetriever = new JSONRetriever() ;
         do {
             String urlString = urlBuilder.completeUrl(startPoint, maxAmount, urlFirstPart) ;
             URI uri = new URI(urlString) ;
             URL url = uri.toURL() ;
             Logger.getGlobal().log(Level.INFO, "\nRetrieve From: {0}", urlString) ;
 
-            JSONRetriever jsonRetriever = new JSONRetriever() ;
             String jsonString = jsonRetriever.getJsonString(url) ;
             JSONObject jsonObject = new JSONObject(jsonString) ;
             JSONArray jsonIssueArray = jsonObject.getJSONArray("issues") ;
@@ -52,8 +52,6 @@ public class TicketRetriever {
             issuesNumber = jsonIssueArray.length() ;
             startPoint = startPoint + maxAmount ;
         } while (issuesNumber != 0) ;
-
-        logTicketRetrieve(ticketInfoList);
 
         return ticketInfoList ;
     }
@@ -81,6 +79,8 @@ public class TicketRetriever {
             LocalDate createdDate = LocalDate.parse(stringDate.substring(0,10)) ;
 
             ticketInfo.setCreateDate(createdDate);
+            VersionInfo openingVersion = computeVersionAfterDate(createdDate, versionInfoList) ;
+            ticketInfo.setOpeningVersion(openingVersion);
         }
 
         if (jsonIssueFieldsObject.has("versions")) {
@@ -93,8 +93,26 @@ public class TicketRetriever {
             }
         }
 
+        if (jsonIssueFieldsObject.has("resolutiondate")) {
+            String stringDate = jsonIssueFieldsObject.getString("resolutiondate") ;
+            LocalDate resolutionDate = LocalDate.parse(stringDate.substring(0,10)) ;
+
+            ticketInfo.setResolutionDate(resolutionDate);
+            VersionInfo fixVersion = computeVersionAfterDate(resolutionDate, versionInfoList) ;
+            ticketInfo.setFixVersion(fixVersion);
+        }
+
         return ticketInfo ;
 
+    }
+
+    private VersionInfo computeVersionAfterDate(LocalDate date, List<VersionInfo> versionInfoList) {
+        for (VersionInfo versionInfo : versionInfoList) {
+            if (versionInfo.getVersionDate().isAfter(date)) {
+                return versionInfo ;
+            }
+        }
+        return null ;
     }
 
     private List<VersionInfo> parseAffectedVersions(JSONArray affectedVersionJsonArray, List<VersionInfo> versionInfoList) {
@@ -111,24 +129,5 @@ public class TicketRetriever {
         affectedVersionList.sort(Comparator.comparing(VersionInfo::getVersionDate));
 
         return affectedVersionList ;
-    }
-
-    public void logTicketRetrieve(List<TicketInfo> ticketInfoList) {
-        StringBuilder logString = new StringBuilder("\n") ;
-        logString.append("Ticket Totali: ").append(ticketInfoList.size()).append("\n") ;
-        for (TicketInfo ticketInfo : ticketInfoList) {
-            logString.append("[").append(ticketInfo.getTicketId()).append(" -- ").append(ticketInfo.getCreateDate().toString()) ;
-
-            if (ticketInfo.getAffectedVersionList() != null) {
-                logString.append(" -- Affected Versions [") ;
-                for (VersionInfo versionInfo : ticketInfo.getAffectedVersionList()) {
-                    logString.append(versionInfo.getReleaseNumber()).append(" ") ;
-                }
-                logString.append("]") ;
-            }
-            logString.append("]\n") ;
-
-        }
-        Logger.getGlobal().log(Level.INFO, "{0}", logString);
     }
 }
