@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Main {
 
-    private static final String PROJECT_NAME = "bookkeeper" ;
+    private static final String PROJECT_NAME = "storm" ;
     private static final String PROJECT_PATH = "/home/simone/Scrivania/University/ISW2/Projects/" ;
     public static void main(String[] args) throws IOException, URISyntaxException, GitAPIException {
 
@@ -25,14 +25,11 @@ public class Main {
         TicketRetriever ticketRetriever = new TicketRetriever(PROJECT_NAME) ;
         List<TicketInfo> ticketInfoList = ticketRetriever.retrieveBugTicket(versionInfoList) ;
 
-        CommitRetriever commitRetriever = new CommitRetriever(PROJECT_PATH + PROJECT_NAME) ;
-        commitRetriever.retrieveFixCommitsForTickets(ticketInfoList) ;
-
         TicketFilter filter = new TicketFilter() ;
-        List<TicketInfo> filteredList = filter.filterTicket(ticketInfoList);
+        List<TicketInfo> filteredList = filter.filterTicket(ticketInfoList, versionInfoList.get(0).getVersionDate());
 
         ProportionComputer proportionComputer = new ProportionComputer() ;
-        proportionComputer.computeProportion(filteredList) ;
+        proportionComputer.setInjectedVersionsForTickets(filteredList, versionInfoList); ;
 
     }
 }

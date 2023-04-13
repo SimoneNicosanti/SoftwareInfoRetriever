@@ -18,16 +18,26 @@ public class ProportionComputer {
                 VersionInfo injectedVersion = computeInjectedVersion(ticketInfo, versionInfoList, proportion) ;
                 ticketInfo.setInjectedVersion(injectedVersion);
             }
-
-            ;
         }
+
+        StringBuilder stringBuilder = new StringBuilder("Computed Injected Versions\n") ;
+        for (TicketInfo ticketInfo : ticketInfoList) {
+            stringBuilder.append(ticketInfo.toString()).append("\n") ;
+        }
+        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder.toString());
     }
 
     private VersionInfo computeInjectedVersion(TicketInfo ticketInfo, List<VersionInfo> versionInfoList, Float proportion) {
-        Integer fixReleaseNumber = ticketInfo.getFixVersion().getReleaseNumber() ;
-        Integer openingReleaseNumber = ticketInfo.getOpeningVersion().getReleaseNumber() ;
+        int fixReleaseNumber = ticketInfo.getFixVersion().getReleaseNumber() ;
+        int openingReleaseNumber = ticketInfo.getOpeningVersion().getReleaseNumber() ;
 
-        Integer proportionInjectedVersion = (int) (fixReleaseNumber - (fixReleaseNumber - openingReleaseNumber) * proportion);
+        Integer proportionInjectedVersion ;
+        if (fixReleaseNumber == openingReleaseNumber) {
+            proportionInjectedVersion = (int) (fixReleaseNumber - proportion);
+        }
+        else {
+            proportionInjectedVersion = (int) (fixReleaseNumber - (fixReleaseNumber - openingReleaseNumber) * proportion);
+        }
         Integer injectedVersionIndex = Integer.max(0, proportionInjectedVersion) ;
 
         return versionInfoList.get(injectedVersionIndex) ;
@@ -53,6 +63,12 @@ public class ProportionComputer {
             incrementProportion += proportion ;
         }
 
+        StringBuilder stringBuilder = new StringBuilder("Ticket List for Proportion\n") ;
+        for (TicketInfo ticketInfo : proportionFilteredList) {
+            stringBuilder.append(ticketInfo.toString()).append("\n") ;
+        }
+
+        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder.toString());
         Logger.getGlobal().log(Level.INFO, "Filtered Ticket List Size {0}", proportionFilteredList.size());
         Logger.getGlobal().log(Level.INFO, "Proportion {0}", incrementProportion / proportionFilteredList.size());
 

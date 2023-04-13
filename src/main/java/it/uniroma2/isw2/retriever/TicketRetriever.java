@@ -108,7 +108,7 @@ public class TicketRetriever {
 
     private VersionInfo computeVersionAfterDate(LocalDate date, List<VersionInfo> versionInfoList) {
         for (VersionInfo versionInfo : versionInfoList) {
-            if (versionInfo.getVersionDate().isAfter(date)) {
+            if (versionInfo.getVersionDate().isAfter(date) || versionInfo.getVersionDate().isEqual(date)) {
                 return versionInfo ;
             }
         }

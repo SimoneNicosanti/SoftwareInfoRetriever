@@ -58,6 +58,8 @@ public class VersionRetriever {
         return versionInfoList ;
     }
 
+
+    // TODO CI SONO VERSIONI CHE SONO RILASCIATE NELLA STESSA DATA!! CHE DOBBIAMO FARE ??
     private VersionInfo parseVersionInfo(JSONObject vesionJsonObject) {
         if (vesionJsonObject.has("releaseDate") && vesionJsonObject.has("name") && vesionJsonObject.has("id")) {
             String versionName = vesionJsonObject.get("name").toString();
@@ -70,10 +72,6 @@ public class VersionRetriever {
         }
         return null ;
     }
-
-
-
-    //Proportion nell'approccio incrementale può essere calcolato solo con i bug fino alla Versione in cui mi sto ponendo, MAI DOPO
 
     public void logVersionRetrieve(List<VersionInfo> versionInfoList) {
         StringBuilder logString = new StringBuilder() ;
