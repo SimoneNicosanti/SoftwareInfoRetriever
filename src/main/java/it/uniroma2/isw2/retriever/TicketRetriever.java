@@ -1,6 +1,7 @@
 package it.uniroma2.isw2.retriever;
 
 import it.uniroma2.isw2.builder.URLBuilder;
+import it.uniroma2.isw2.enums.ProjectsEnum;
 import it.uniroma2.isw2.model.TicketInfo;
 import it.uniroma2.isw2.model.VersionInfo;
 import org.json.JSONArray;
@@ -26,6 +27,7 @@ public class TicketRetriever {
     }
 
     public List<TicketInfo> retrieveBugTicket(List<VersionInfo> versionInfoList) throws IOException, URISyntaxException {
+
         Logger.getGlobal().log(Level.INFO, "Ticket Info Retrieve From Jira");
 
         URLBuilder urlBuilder = new URLBuilder() ;
