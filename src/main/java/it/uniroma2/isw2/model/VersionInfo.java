@@ -3,6 +3,7 @@ package it.uniroma2.isw2.model;
 import org.eclipse.jgit.lib.Ref;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class VersionInfo {
 
@@ -12,6 +13,8 @@ public class VersionInfo {
 
     private Integer releaseNumber ;
     private Ref ref ;
+
+    private List<ClassInfo> classInfoList ;
 
 
     public VersionInfo(String versionName, LocalDate versionDate, String versionId) {
@@ -66,5 +69,13 @@ public class VersionInfo {
         StringBuilder stringBuilder = new StringBuilder() ;
         stringBuilder.append("Number ").append(releaseNumber).append(" // ").append("Name ").append(versionName).append(" // ").append("Date ").append(versionDate.toString()) ;
         return stringBuilder.toString() ;
+    }
+
+    public List<ClassInfo> getClassInfoList() {
+        return classInfoList;
+    }
+
+    public void setClassInfoList(List<ClassInfo> classInfoList) {
+        this.classInfoList = classInfoList;
     }
 }

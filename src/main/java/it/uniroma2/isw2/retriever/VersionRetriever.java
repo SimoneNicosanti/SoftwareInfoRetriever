@@ -42,7 +42,12 @@ public class VersionRetriever {
             versionInfoList.get(i).setReleaseNumber(i);
         }
 
-        logVersionRetrieve(versionInfoList);
+        StringBuilder logString = new StringBuilder() ;
+        logString.append("\nProject Versions for ").append(projectName.toUpperCase()).append("\n") ;
+        for (VersionInfo versionInfo : versionInfoList) {
+            logString.append(versionInfo.toString()).append("\n") ;
+        }
+        Logger.getGlobal().log(Level.INFO, "{0}", logString);
 
         return versionInfoList ;
     }
@@ -73,12 +78,4 @@ public class VersionRetriever {
         return null ;
     }
 
-    public void logVersionRetrieve(List<VersionInfo> versionInfoList) {
-        StringBuilder logString = new StringBuilder() ;
-        logString.append("\nProject Versions\n") ;
-        for (VersionInfo versionInfo : versionInfoList) {
-            logString.append(versionInfo.toString()).append("\n") ;
-        }
-        Logger.getGlobal().log(Level.INFO, "{0}", logString);
-    }
 }

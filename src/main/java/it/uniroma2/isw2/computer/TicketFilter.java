@@ -38,7 +38,6 @@ public class TicketFilter {
             return false ;
         }
 
-
         if (ticketInfo.getOpeningVersion() == null || ticketInfo.getFixVersion() == null) {
             return false ;
         }

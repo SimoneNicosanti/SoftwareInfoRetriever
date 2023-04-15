@@ -4,15 +4,13 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TicketInfo {
 
     private String ticketId ;
 
     private VersionInfo fixVersion ;
-    private RevCommit fixCommit ;
+    private List<RevCommit> fixCommitList;
     private LocalDate createDate ;
     private LocalDate resolutionDate ;
     private List<VersionInfo> affectedVersionList ;
@@ -42,12 +40,12 @@ public class TicketInfo {
         this.openingVersion = openingVersion;
     }
 
-    public RevCommit getFixCommit() {
-        return fixCommit;
+    public List<RevCommit> getFixCommitList() {
+        return fixCommitList;
     }
 
-    public void setFixCommit(RevCommit fixCommit) {
-        this.fixCommit = fixCommit;
+    public void setFixCommitList(List<RevCommit> fixCommitList) {
+        this.fixCommitList = fixCommitList;
     }
 
     public VersionInfo getFixVersion() {
@@ -120,6 +118,39 @@ public class TicketInfo {
         }
         else {
             stringBuilder.append("NULL") ;
+        }
+        stringBuilder.append(" // ") ;
+
+        stringBuilder.append("Affected ") ;
+        if (affectedVersionList == null) {
+            stringBuilder.append("NULL") ;
+        }
+        else {
+            stringBuilder.append("[") ;
+            for (int i = 0 ; i < affectedVersionList.size() ; i++) {
+                VersionInfo versionInfo = affectedVersionList.get(i) ;
+                stringBuilder.append(versionInfo.getVersionName())  ;
+                if (i != affectedVersionList.size() - 1) {
+                    stringBuilder.append(", ") ;
+                }
+            }
+            stringBuilder.append("]") ;
+        }
+        stringBuilder.append(" // ") ;
+
+        stringBuilder.append("Fix Commit ") ;
+        if (fixCommitList == null) {
+            stringBuilder.append("NULL") ;
+        }
+        else {
+            stringBuilder.append("[") ;
+            for (int i = 0 ; i < fixCommitList.size() ; i++) {
+                stringBuilder.append(fixCommitList.get(i).getId()) ;
+                if (i != fixCommitList.size() - 1) {
+                    stringBuilder.append(", ") ;
+                }
+            }
+            stringBuilder.append("]") ;
         }
 
         return stringBuilder.toString() ;

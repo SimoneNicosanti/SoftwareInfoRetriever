@@ -1,12 +1,9 @@
 package it.uniroma2.isw2.retriever;
 
 import it.uniroma2.isw2.model.TicketInfo;
-import it.uniroma2.isw2.model.VersionInfo;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.RefDatabase;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -14,15 +11,17 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class CommitRetriever {
+public class FixCommitRetriever {
 
     Git git ;
     Repository repo ;
 
-    public CommitRetriever(String repoPath) throws IOException {
+    public FixCommitRetriever(String repoPath, String projectName) throws IOException {
         FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
-        this.repo = repositoryBuilder.setGitDir(new File(repoPath + "/.git")).build() ;
+        this.repo = repositoryBuilder.setGitDir(new File(repoPath + projectName + "/.git")).build() ;
         this.git = new Git(repo) ;
     }
 
@@ -36,12 +35,18 @@ public class CommitRetriever {
         }
 
         for (TicketInfo ticketInfo : ticketInfoList) {
-            RevCommit fixCommit = findFixCommitForTicket(ticketInfo, commitList) ;
-            ticketInfo.setFixCommit(fixCommit);
+            List<RevCommit> fixCommitList = findFixCommitListForTicket(ticketInfo, commitList) ;
+            ticketInfo.setFixCommitList(fixCommitList);
         }
+
+        StringBuilder stringBuilder = new StringBuilder("Ticket Fix Commits\n") ;
+        for (TicketInfo ticketInfo : ticketInfoList) {
+            stringBuilder.append(ticketInfo.toString()).append("\n") ;
+        }
+        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
     }
 
-    private RevCommit findFixCommitForTicket(TicketInfo ticketInfo, List<RevCommit> commitList) {
+    private List<RevCommit> findFixCommitListForTicket(TicketInfo ticketInfo, List<RevCommit> commitList) {
         List<RevCommit> fixCommitList = new ArrayList<>() ;
         for (RevCommit commit : commitList) {
             String commitMessage = commit.getFullMessage() ;
@@ -51,12 +56,7 @@ public class CommitRetriever {
         }
         fixCommitList.sort(Comparator.comparing(o -> o.getAuthorIdent().getWhen()));
 
-        if (!fixCommitList.isEmpty()) {
-            return fixCommitList.get(fixCommitList.size() - 1);
-        }
-        else {
-            return null ;
-        }
+        return fixCommitList ;
     }
 
 }
