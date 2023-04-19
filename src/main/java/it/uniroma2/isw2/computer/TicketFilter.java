@@ -1,5 +1,6 @@
 package it.uniroma2.isw2.computer;
 
+import it.uniroma2.isw2.Main;
 import it.uniroma2.isw2.model.TicketInfo;
 
 import java.time.LocalDate;
@@ -20,12 +21,9 @@ public class TicketFilter {
             }
         }
 
-        StringBuilder stringBuilder = new StringBuilder("Ticket Filtrati\n") ;
-        stringBuilder.append("Numero di Ticket ").append(filteredList.size()).append("\n") ;
-        for (TicketInfo ticketInfo : filteredList) {
-            stringBuilder.append(ticketInfo.toString()).append("\n") ;
-        }
-        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder) ;
+        StringBuilder stringBuilder = new StringBuilder() ;
+        stringBuilder.append("Numero Ticket Filtrati Per ").append(Main.PROJECT_NAME.toUpperCase()).append(" >> ").append(filteredList.size()).append("\n") ;
+        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
 
         return filteredList ;
     }
@@ -33,7 +31,6 @@ public class TicketFilter {
 
     private Boolean isValidTicket(TicketInfo ticketInfo, LocalDate firstVersionDate) {
 
-        // TODO: CI SONO DEI TICKET CREATI PRIMA DELLA PRIMA VERSIONE: ESCLUDERLI O NO??
         if (ticketInfo.getCreateDate().isBefore(firstVersionDate)) {
             return false ;
         }

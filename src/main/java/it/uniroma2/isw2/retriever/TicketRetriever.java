@@ -28,8 +28,6 @@ public class TicketRetriever {
 
     public List<TicketInfo> retrieveBugTicket(List<VersionInfo> versionInfoList) throws IOException, URISyntaxException {
 
-        Logger.getGlobal().log(Level.INFO, "Ticket Info Retrieve From Jira for {0}", projectName.toUpperCase());
-
         URLBuilder urlBuilder = new URLBuilder() ;
         String urlFirstPart = urlBuilder.buildUrl(projectName) ;
         int startPoint = 0 ;
@@ -43,7 +41,6 @@ public class TicketRetriever {
             String urlString = urlBuilder.completeUrl(startPoint, maxAmount, urlFirstPart) ;
             URI uri = new URI(urlString) ;
             URL url = uri.toURL() ;
-            Logger.getGlobal().log(Level.INFO, "\nRetrieve From: {0}", urlString) ;
 
             String jsonString = jsonRetriever.getJsonString(url) ;
             JSONObject jsonObject = new JSONObject(jsonString) ;
@@ -55,7 +52,9 @@ public class TicketRetriever {
             startPoint = startPoint + maxAmount ;
         } while (issuesNumber != 0) ;
 
-        Logger.getGlobal().log(Level.INFO, "Numero ticket ttotali {0}", ticketInfoList.size());
+        StringBuilder stringBuilder = new StringBuilder() ;
+        stringBuilder.append("Ticket Totali per ").append(projectName.toUpperCase()).append(" >> ").append(ticketInfoList.size()) ;
+        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
 
         return ticketInfoList ;
     }

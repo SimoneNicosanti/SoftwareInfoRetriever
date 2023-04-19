@@ -6,7 +6,6 @@ public enum ProjectsEnum {
     OPENJPA,
     ZOOKEEPER,
     SYNCOPE,
-    STORM
-    //TAJO
+    TAJO
 
 }
