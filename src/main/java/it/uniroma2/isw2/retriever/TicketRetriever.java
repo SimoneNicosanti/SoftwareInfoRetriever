@@ -1,7 +1,6 @@
 package it.uniroma2.isw2.retriever;
 
 import it.uniroma2.isw2.builder.URLBuilder;
-import it.uniroma2.isw2.enums.ProjectsEnum;
 import it.uniroma2.isw2.model.TicketInfo;
 import it.uniroma2.isw2.model.VersionInfo;
 import org.json.JSONArray;
@@ -53,7 +52,7 @@ public class TicketRetriever {
         } while (issuesNumber != 0) ;
 
         StringBuilder stringBuilder = new StringBuilder() ;
-        stringBuilder.append("Ticket Totali per ").append(projectName.toUpperCase()).append(" >> ").append(ticketInfoList.size()) ;
+        stringBuilder.append("Ticket Totali per ").append(projectName.toUpperCase()).append(" >> ").append(ticketInfoList.size()).append("\n") ;
         Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
 
         return ticketInfoList ;

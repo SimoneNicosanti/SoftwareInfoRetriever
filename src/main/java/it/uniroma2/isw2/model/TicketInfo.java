@@ -99,7 +99,7 @@ public class TicketInfo {
 
         return stringBuilder.toString() ;
     }
-    
+
     private void buildFixCommitPart(StringBuilder stringBuilder) {
         stringBuilder.append("Fix Commit ") ;
         if (fixCommitList == null) {

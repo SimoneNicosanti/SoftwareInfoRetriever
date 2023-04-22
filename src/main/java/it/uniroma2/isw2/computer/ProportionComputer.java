@@ -1,6 +1,6 @@
 package it.uniroma2.isw2.computer;
 
-import it.uniroma2.isw2.enums.ProjectsEnum;
+import it.uniroma2.isw2.enums.ColdStartEnum;
 import it.uniroma2.isw2.model.TicketInfo;
 import it.uniroma2.isw2.model.VersionInfo;
 import it.uniroma2.isw2.retriever.TicketRetriever;
@@ -11,6 +11,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ProportionComputer {
 
@@ -63,7 +65,7 @@ public class ProportionComputer {
             return coldStartProportion ;
         }
         List<Float> projectsProportionList = new ArrayList<>() ;
-        for (ProjectsEnum project : ProjectsEnum.values()) {
+        for (ColdStartEnum project : ColdStartEnum.values()) {
             Float projectColdStart = computeColdStartForProject(project.name().toLowerCase()) ;
             if (projectColdStart != null) {
                 projectsProportionList.add(projectColdStart);
@@ -72,6 +74,7 @@ public class ProportionComputer {
 
         Float coldStartValue ;
         projectsProportionList.sort(Comparator.naturalOrder());
+
         if (projectsProportionList.size() % 2 != 0) {
             coldStartValue = projectsProportionList.get((projectsProportionList.size() - 1) / 2) ;
         }
@@ -80,6 +83,11 @@ public class ProportionComputer {
             Float secondValue = projectsProportionList.get((projectsProportionList.size()) / 2) ;
             coldStartValue = (0.5f) * (firstValue + secondValue) ;
         }
+
+        StringBuilder stringBuilder = new StringBuilder() ;
+        stringBuilder.append("\n").append("Array per ColdStart Proportion >> ").append(projectsProportionList).append("\n") ;
+        stringBuilder.append("Cold Start Value >> ").append(coldStartValue).append("\n") ;
+        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
 
         this.coldStartProportion = coldStartValue ;
 
@@ -93,8 +101,8 @@ public class ProportionComputer {
         TicketRetriever ticketRetriever = new TicketRetriever(projectName) ;
         List<TicketInfo> ticketInfoList = ticketRetriever.retrieveBugTicket(versionInfoList) ;
 
-        TicketFilter filter = new TicketFilter() ;
-        List<TicketInfo> filteredList = filter.filterTicket(ticketInfoList, versionInfoList.get(0).getVersionDate());
+        TicketFilter filter = new TicketFilter(projectName) ;
+        List<TicketInfo> filteredList = filter.filterTicketByVersions(ticketInfoList, versionInfoList.get(0).getVersionDate());
 
         List<TicketInfo> projectProportionTicketList = filterTicketListForProportion(filteredList) ;
         if (projectProportionTicketList.size() < THRESHOLD) {

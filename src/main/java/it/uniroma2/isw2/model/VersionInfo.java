@@ -1,8 +1,10 @@
 package it.uniroma2.isw2.model;
 
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class VersionInfo {
@@ -12,7 +14,8 @@ public class VersionInfo {
     private String versionId ;
 
     private Integer releaseNumber ;
-    private Ref ref ;
+
+    private List<RevCommit> versionCommitList ;
 
     private List<ClassInfo> classInfoList ;
 
@@ -21,7 +24,6 @@ public class VersionInfo {
         this.versionName = versionName ;
         this.versionDate = versionDate ;
         this.versionId = versionId ;
-        this.ref = null ;
     }
 
     public LocalDate getVersionDate() {
@@ -38,14 +40,6 @@ public class VersionInfo {
 
     public void setVersionName(String versionName) {
         this.versionName = versionName;
-    }
-
-    public Ref getRef() {
-        return ref;
-    }
-
-    public void setRef(Ref ref) {
-        this.ref = ref;
     }
 
     public Integer getReleaseNumber() {
@@ -77,5 +71,13 @@ public class VersionInfo {
 
     public void setClassInfoList(List<ClassInfo> classInfoList) {
         this.classInfoList = classInfoList;
+    }
+
+    public List<RevCommit> getVersionCommitList() {
+        return versionCommitList;
+    }
+
+    public void setVersionCommitList(List<RevCommit> versionCommitList) {
+        this.versionCommitList = versionCommitList;
     }
 }
