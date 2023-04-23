@@ -1,6 +1,5 @@
 package it.uniroma2.isw2.computer;
 
-import it.uniroma2.isw2.Main;
 import it.uniroma2.isw2.model.TicketInfo;
 
 import java.time.LocalDate;

@@ -2,6 +2,7 @@ package it.uniroma2.isw2;
 
 import it.uniroma2.isw2.computer.BuggyClassesComputer;
 import it.uniroma2.isw2.computer.FixAndAffectedVersionsComputer;
+import it.uniroma2.isw2.computer.MetricsComputer;
 import it.uniroma2.isw2.computer.TicketFilter;
 import it.uniroma2.isw2.exception.ProportionException;
 import it.uniroma2.isw2.model.TicketInfo;
@@ -10,7 +11,7 @@ import it.uniroma2.isw2.retriever.ClassesRetriever;
 import it.uniroma2.isw2.retriever.CommitRetriever;
 import it.uniroma2.isw2.retriever.TicketRetriever;
 import it.uniroma2.isw2.retriever.VersionRetriever;
-import it.uniroma2.isw2.writer.CsvWriter;
+import it.uniroma2.isw2.writer.CSVWriter;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.IOException;
@@ -50,7 +51,10 @@ public class Main {
         BuggyClassesComputer buggyClassesComputer = new BuggyClassesComputer(PROJECT_NAME, PROJECT_PATH) ;
         buggyClassesComputer.computeBuggyClassesForAllVersions(completeTicketList, versionInfoList);
 
-        CsvWriter csvWriter = new CsvWriter(PROJECT_NAME) ;
+        MetricsComputer metricsComputer = new MetricsComputer(PROJECT_NAME, PROJECT_PATH, versionInfoList) ;
+        metricsComputer.computeMetrics();
+
+        CSVWriter csvWriter = new CSVWriter(PROJECT_NAME) ;
         csvWriter.writeAllVersionInfo(versionInfoList);
     }
 }

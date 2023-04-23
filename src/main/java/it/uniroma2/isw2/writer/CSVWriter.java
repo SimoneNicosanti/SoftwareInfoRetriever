@@ -9,14 +9,26 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-public class CsvWriter {
+public class CSVWriter {
 
     private static final String SEPARATOR = "," ;
     private final String outputPath ;
 
-    private static final String[] HEADER_STRING = {"Version", "ClassName", "Buggy"} ;
+    private static final String[] HEADER_STRING = {
+            "Version",
+            "ClassName",
+            "LinesOfCode",
+            "AddedLOC",
+            "MaxAddedLOC",
+            "AvgAddedLOC",
+            "TouchedLOC",
+            "Churn",
+            "MaxChurn",
+            "AvgChurn",
+            "NumberOfAuthors",
+            "Buggy"} ;
 
-    public CsvWriter(String projectName) {
+    public CSVWriter(String projectName) {
         this.outputPath = projectName + ".csv" ;
     }
 
@@ -57,6 +69,26 @@ public class CsvWriter {
 
     private String buildClassString(ClassInfo classInfo) {
 
-        return classInfo.getName() + SEPARATOR + (classInfo.isBuggy() ? "YES" : "NO");
+        return classInfo.getName()
+                + SEPARATOR
+                + classInfo.getLoc()
+                + SEPARATOR
+                + classInfo.getAddedLoc()
+                + SEPARATOR
+                + classInfo.getMaxAddedLoc()
+                + SEPARATOR
+                + classInfo.getAvgAddedLoc()
+                + SEPARATOR
+                + classInfo.getTouchedLoc()
+                + SEPARATOR
+                + classInfo.getChurn()
+                + SEPARATOR
+                + classInfo.getMaxChurn()
+                + SEPARATOR
+                + classInfo.getAvgChurn()
+                + SEPARATOR
+                + classInfo.getNumberOfAuthors()
+                + SEPARATOR
+                + (classInfo.isBuggy() ? "True" : "False");
     }
 }

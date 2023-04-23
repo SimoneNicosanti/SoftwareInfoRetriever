@@ -27,7 +27,7 @@ public class CommitRetriever {
     private final List<RevCommit> commitList ;
 
     public CommitRetriever(String repoPath, String projectName, LocalDate lastVersionDate) throws IOException, GitAPIException {
-        this.projectName = projectName ;
+        this.projectName = projectName.toUpperCase() ;
 
         FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
         Repository repo = repositoryBuilder.setGitDir(new File(repoPath + projectName + "/.git")).build();
@@ -90,7 +90,6 @@ public class CommitRetriever {
 
     private boolean commitMatchesTicket(RevCommit commit, Pattern pattern) {
         String commitMessage = commit.getFullMessage() ;
-        String projectName = Main.PROJECT_NAME.toUpperCase() ;
 
         Matcher matcher = pattern.matcher(commitMessage) ;
         boolean matchFound = matcher.find() ;
