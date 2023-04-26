@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CSVWriter {
 
@@ -26,6 +28,8 @@ public class CSVWriter {
             "MaxChurn",
             "AvgChurn",
             "NumberOfAuthors",
+            "NumberOfRevisions",
+            "NumberOfDefectsFixed",
             "Buggy"} ;
 
     public CSVWriter(String projectName) {
@@ -33,13 +37,14 @@ public class CSVWriter {
     }
 
     public void writeAllVersionInfo(List<VersionInfo> versionInfoList) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath)) ;
-        writeHeader(writer) ;
-        for (VersionInfo versionInfo : versionInfoList) {
-            writeVersionInfo(writer, versionInfo);
-        }
+        Logger.getGlobal().log(Level.INFO, "Scrittura CSV\n");
 
-        writer.close();
+        try(Writer writer = new BufferedWriter(new FileWriter(outputPath))) {
+            writeHeader(writer);
+            for (VersionInfo versionInfo : versionInfoList) {
+                writeVersionInfo(writer, versionInfo);
+            }
+        }
     }
 
     private void writeHeader(Writer writer) throws IOException {
@@ -88,6 +93,10 @@ public class CSVWriter {
                 + classInfo.getAvgChurn()
                 + SEPARATOR
                 + classInfo.getNumberOfAuthors()
+                + SEPARATOR
+                + classInfo.getNumberOfRevisions()
+                + SEPARATOR
+                + classInfo.getNumberDefectsFixed()
                 + SEPARATOR
                 + (classInfo.isBuggy() ? "True" : "False");
     }

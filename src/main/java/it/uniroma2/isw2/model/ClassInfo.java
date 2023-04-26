@@ -1,10 +1,14 @@
 package it.uniroma2.isw2.model;
 
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevCommitList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassInfo {
+
+    private List<RevCommit> modifierCommitList ;
     private String name ;
     private boolean buggy ;
     private int loc ;
@@ -16,10 +20,13 @@ public class ClassInfo {
     private int maxChurn ;
     private float avgChurn ;
     private int numberOfAuthors ;
+    private int numberOfRevisions ;
+    private int numberDefectsFixed ;
 
 
     public ClassInfo(String name) {
         this.name = name ;
+        this.modifierCommitList = new ArrayList<>() ;
         this.buggy = false ;
     }
 
@@ -109,5 +116,29 @@ public class ClassInfo {
 
     public void setAvgChurn(float avgChurn) {
         this.avgChurn = avgChurn;
+    }
+
+    public int getNumberOfRevisions() {
+        return numberOfRevisions;
+    }
+
+    public void setNumberOfRevisions(int numberOfRevisions) {
+        this.numberOfRevisions = numberOfRevisions;
+    }
+
+    public List<RevCommit> getModifierCommitList() {
+        return modifierCommitList;
+    }
+
+    public void setModifierCommitList(List<RevCommit> modifierCommitList) {
+        this.modifierCommitList = modifierCommitList;
+    }
+
+    public int getNumberDefectsFixed() {
+        return numberDefectsFixed;
+    }
+
+    public void setNumberDefectsFixed(int numberDefectsFixed) {
+        this.numberDefectsFixed = numberDefectsFixed;
     }
 }

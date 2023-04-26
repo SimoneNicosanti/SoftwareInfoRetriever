@@ -10,24 +10,30 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class FixAndAffectedVersionsComputer {
+public class VersionsFixer {
 
     private final ProportionComputer proportionComputer ;
 
-    public FixAndAffectedVersionsComputer() {
+    public VersionsFixer() {
         this.proportionComputer = new ProportionComputer() ;
     }
 
-    public void setInjectedAndAffectedVersionForAllTickets(List<TicketInfo> ticketInfoList, List<VersionInfo> versionInfoList) throws URISyntaxException, IOException {
+    public void fixInjectedAndAffectedVersions(List<TicketInfo> ticketInfoList, List<VersionInfo> versionInfoList) throws URISyntaxException, IOException {
         List<TicketInfo> sortedTicketList = new ArrayList<>(ticketInfoList) ;
         sortedTicketList.sort(Comparator.comparing(TicketInfo::getResolutionDate));
         for (TicketInfo ticketInfo : sortedTicketList) {
             Float proportionValue = proportionComputer.computeProportionForTicket(ticketInfo) ;
             if (proportionValue != null) {
+                // Se il valore di proportion non è null, allora il ticket non ha injectedVersion associata e la calcoliamo con proportion
                 setInjectedVersionForTicket(ticketInfo, versionInfoList, proportionValue);
-                List<VersionInfo> affectedVersionList = computeAffectedVersionsForTicket(ticketInfo, versionInfoList);
-                ticketInfo.setAffectedVersionList(affectedVersionList);
             }
+            /*
+            Essendo il campo affected versions di Jira non obbligatorio, è possibile che delle versioni manchino:
+            calcoliamo le affected versions non solo per i ticket di cui abbiamo calcolato la injected, ma per tutti
+            i ticket
+             */
+            List<VersionInfo> affectedVersionList = computeAffectedVersionsForTicket(ticketInfo, versionInfoList);
+            ticketInfo.setAffectedVersionList(affectedVersionList);
         }
 
     }
@@ -42,7 +48,6 @@ public class FixAndAffectedVersionsComputer {
         else {
             proportionIndex = (int) (fixNumber - (fixNumber - openingNumber) * proportionValue) ;
         }
-
         Integer index = Integer.max(0, proportionIndex) ;
 
         VersionInfo injectedVersion = versionInfoList.get(index) ;
@@ -59,6 +64,8 @@ public class FixAndAffectedVersionsComputer {
                 affectedVersionList.add(versionInfo) ;
             }
         }
+
+        affectedVersionList.sort(Comparator.comparing(VersionInfo::getReleaseNumber));
 
         return affectedVersionList ;
     }

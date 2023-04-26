@@ -2,18 +2,14 @@ package it.uniroma2.isw2.retriever;
 
 import it.uniroma2.isw2.model.ClassInfo;
 import it.uniroma2.isw2.model.VersionInfo;
-import it.uniroma2.isw2.utils.DateUtils;
+import it.uniroma2.isw2.utils.GitUtils;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,19 +18,21 @@ import java.util.logging.Logger;
 
 public class ClassesRetriever {
 
-    private final Repository repo ;
+    private String projectName ;
+    private Repository repo ;
 
-    public ClassesRetriever(String projectName, String repoPath) throws IOException {
-
-        FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
-        this.repo = repositoryBuilder.setGitDir(new File(repoPath + projectName + "/.git")).build();
+    public ClassesRetriever(String projectName, Repository repo) {
+        this.projectName = projectName ;
+        this.repo = repo ;
     }
 
     public void retrieveClassesForAllVersions(List<VersionInfo> versionInfoList) throws IOException {
+        Logger.getGlobal().log(Level.INFO, "{0}", "Recupero Classi per " + projectName.toUpperCase());
 
         for (VersionInfo versionInfo : versionInfoList) {
             List<ClassInfo> classInfoList = retrieveClassesForVersion(versionInfo);
             versionInfo.setClassInfoList(classInfoList);
+            retrieveChangingCommitsForAllClasses(versionInfo) ;
         }
 
         StringBuilder stringBuilder = new StringBuilder() ;
@@ -42,7 +40,22 @@ public class ClassesRetriever {
         for (VersionInfo versionInfo : versionInfoList) {
             stringBuilder.append(versionInfo.getVersionName()).append(" >> ").append(versionInfo.getClassInfoList().size()).append("\n") ;
         }
-        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
+        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder) ;
+
+    }
+
+    private void retrieveChangingCommitsForAllClasses(VersionInfo versionInfo) throws IOException {
+        for (RevCommit commit : versionInfo.getVersionCommitList()) {
+            List<String> changedClasses = GitUtils.getChangedClassesByCommit(commit, repo) ;
+            for (ClassInfo classInfo : versionInfo.getClassInfoList()) {
+                for (String changedClass : changedClasses) {
+                    if (changedClass.compareTo(classInfo.getName()) == 0) {
+                        classInfo.getModifierCommitList().add(commit) ;
+                        break ;
+                    }
+                }
+            }
+        }
     }
 
     private List<ClassInfo> retrieveClassesForVersion(VersionInfo versionInfo) throws IOException {
@@ -53,10 +66,10 @@ public class ClassesRetriever {
         if (commitList.size() == 0) {
             return classInfoList ;
         }
-
         RevCommit lastCommit = commitList.get(commitList.size() - 1) ;
 
         ObjectId treeId = lastCommit.getTree().getId();
+
         TreeWalk treeWalk = new TreeWalk(repo) ;
         treeWalk.reset(treeId);
         treeWalk.setRecursive(false);
@@ -66,15 +79,18 @@ public class ClassesRetriever {
             }
             else {
                 if (treeWalk.getPathString().endsWith(".java") && !treeWalk.getPathString().contains("/test/")) {
-                    String className = treeWalk.getPathString() ;
-                    ClassInfo classInfo = new ClassInfo(className) ;
-                    classInfoList.add(classInfo) ;
+                    String className = treeWalk.getPathString();
+                    ClassInfo classInfo = new ClassInfo(className);
+                    classInfoList.add(classInfo);
                 }
             }
         }
 
-        classInfoList.sort(Comparator.comparing(ClassInfo::getName));
+        treeWalk.close();
+        classInfoList.sort(Comparator.comparing(ClassInfo::getName)) ;
 
         return classInfoList ;
     }
+
 }
+

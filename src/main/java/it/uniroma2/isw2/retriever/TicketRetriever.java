@@ -80,6 +80,7 @@ public class TicketRetriever {
             String stringDate = jsonIssueFieldsObject.getString("created") ;
             LocalDate createdDate = LocalDate.parse(stringDate.substring(0,10)) ;
 
+            // Consideriamo la Opening Version come la prima versione dopo la data di creazione del Ticket
             ticketInfo.setCreateDate(createdDate);
             VersionInfo openingVersion = computeVersionAfterDate(createdDate, versionInfoList) ;
             ticketInfo.setOpeningVersion(openingVersion);
@@ -89,6 +90,7 @@ public class TicketRetriever {
             JSONArray affectedVersionJsonArray = jsonIssueFieldsObject.getJSONArray("versions") ;
             List<VersionInfo> affectedVersionsList = parseAffectedVersions(affectedVersionJsonArray, versionInfoList) ;
 
+            // Consideriamo la Injected Version come la prima delle Affected Versions riportate su Jira
             if (!affectedVersionsList.isEmpty()) {
                 ticketInfo.setAffectedVersionList(affectedVersionsList);
                 ticketInfo.setInjectedVersion(affectedVersionsList.get(0));
@@ -96,6 +98,7 @@ public class TicketRetriever {
         }
 
         if (jsonIssueFieldsObject.has("resolutiondate")) {
+            // Assumiamo che la data effettiva di chiusura del Ticket sia la resolutiondate riportata su Jira
             String stringDate = jsonIssueFieldsObject.getString("resolutiondate") ;
             LocalDate resolutionDate = LocalDate.parse(stringDate.substring(0,10)) ;
 

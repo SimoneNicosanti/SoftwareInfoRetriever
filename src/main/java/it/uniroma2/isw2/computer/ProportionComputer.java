@@ -47,6 +47,7 @@ public class ProportionComputer {
     }
 
     private Float computeIncrementalProportion(List<TicketInfo> proportionTicketList) {
+        // TODO Ragionare su impatto su precision e recall calcolando proportion in questo modo
         Float incrementProportion = 0f ;
         Integer size = proportionTicketList.size() ;
         for (TicketInfo ticketInfo : proportionTicketList) {
@@ -56,7 +57,6 @@ public class ProportionComputer {
             Float proportion = (((float) fixReleaseNumber) - injectedReleaseNumber) / (fixReleaseNumber - openingReleaseNumber);
             incrementProportion += proportion;
         }
-
         return incrementProportion / size ;
     }
 
@@ -125,7 +125,12 @@ public class ProportionComputer {
     }
 
     private boolean isValidTicket(TicketInfo ticketInfo) {
-        //TODO AGGIUNGERE CONDIZIONE DI RIMOZIONE OPENING != FIX ?? SE TOGLI AGGIUNGI CONTROLLI DENOMINATORE DIVERSO DA ZERO
+        /*
+        Consideriamo un ticket valido per fare Proportion se
+        * Ha Injected Version
+        * Opening e Fix Version sono diverse per evitare che il denominatore sia nullo
+         */
+        // TODO AGGIUNGERE CONDIZIONE DI RIMOZIONE OPENING != FIX ?? SE TOGLI AGGIUNGI CONTROLLI DENOMINATORE DIVERSO DA ZERO
         return !ticketInfo.getOpeningVersion().getReleaseNumber().equals(ticketInfo.getFixVersion().getReleaseNumber()) && ticketInfo.getInjectedVersion() != null;
     }
 }
