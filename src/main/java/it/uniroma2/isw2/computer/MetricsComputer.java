@@ -77,7 +77,6 @@ public class MetricsComputer {
         setNumberOfDefectsFixed(classInfo, ticketInfoList) ;
     }
 
-    // TODO Capire bene come impostare le classi buggy!!
     private void setNumberOfDefectsFixed(ClassInfo classInfo, List<TicketInfo> ticketInfoList) {
         Integer numberOfDefectsFixed = 0 ;
         for (RevCommit commit : classInfo.getModifierCommitList()) {

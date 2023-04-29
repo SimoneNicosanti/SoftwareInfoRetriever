@@ -5,7 +5,6 @@ import it.uniroma2.isw2.model.VersionInfo;
 import it.uniroma2.isw2.utils.DateUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.IOException;
@@ -109,6 +108,11 @@ public class CommitRetriever {
             }
             List<RevCommit> revCommits = retrieveCommitListForVersion(versionDate, prevVersionDate);
             versionInfo.setVersionCommitList(revCommits);
+        }
+
+        versionInfoList.removeIf(versionInfo -> versionInfo.getVersionCommitList().isEmpty()) ;
+        for (int i = 0 ; i < versionInfoList.size() ; i++) {
+            versionInfoList.get(i).setReleaseNumber(i);
         }
 
         StringBuilder stringBuilder = new StringBuilder();

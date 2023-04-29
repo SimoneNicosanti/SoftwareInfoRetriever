@@ -1,5 +1,5 @@
-/bookkeeper.csv
-/storm.csv
+.BOOKKEEPER/
+.STORM/
 
 .scannerwork/
 target/

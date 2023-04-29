@@ -61,7 +61,6 @@ public class ClassesRetriever {
     private List<ClassInfo> retrieveClassesForVersion(VersionInfo versionInfo) throws IOException {
         List<RevCommit> commitList = versionInfo.getVersionCommitList() ;
 
-        // TODO Scegliere cosa fare con le classi che hanno zero commit
         List<ClassInfo> classInfoList = new ArrayList<>() ;
         if (commitList.size() == 0) {
             return classInfoList ;

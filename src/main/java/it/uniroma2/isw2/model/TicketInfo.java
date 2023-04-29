@@ -3,6 +3,7 @@ package it.uniroma2.isw2.model;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TicketInfo {
@@ -20,6 +21,8 @@ public class TicketInfo {
 
     public TicketInfo(String ticketId) {
         this.ticketId = ticketId ;
+        this.fixCommitList = new ArrayList<>() ;
+        this.affectedVersionList = new ArrayList<>() ;
     }
 
 

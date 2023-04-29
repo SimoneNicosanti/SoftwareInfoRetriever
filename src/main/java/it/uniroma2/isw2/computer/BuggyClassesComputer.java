@@ -67,6 +67,7 @@ public class BuggyClassesComputer {
         return buggyClasses ;
     }
 
+    //TODO : rimuovere metodo e usare quello di Utils
     private List<String> computeChangedClassesByCommit(RevCommit commit) throws IOException, GitAPIException {
         List<String> buggyClassesForCommit = new ArrayList<>() ;
 
