@@ -1,5 +1,6 @@
 package it.uniroma2.isw2.writer;
 
+import it.uniroma2.isw2.utils.PathBuilder;
 import it.uniroma2.isw2.model.ClassInfo;
 import it.uniroma2.isw2.model.VersionInfo;
 
@@ -12,8 +13,6 @@ public class ARFWriter {
 
     private static final String SEPARATOR = "," ;
     private final String projectName ;
-    private final Path testPath ;
-    private final Path trainPath ;
 
     private static final String[] ATTRIBUTES = {
             "LinesOfCode",
@@ -31,21 +30,13 @@ public class ARFWriter {
 
     public ARFWriter(String projectName) throws IOException {
         this.projectName = projectName ;
-        this.trainPath = Path.of(projectName.toUpperCase(), "ARF", "Train");
-        this.testPath = Path.of(projectName.toUpperCase(), "ARF", "Test");
 
-        Files.createDirectories(trainPath);
-        Files.createDirectories(testPath);
+        Files.createDirectories(PathBuilder.buildDataSetDirectoryPath(projectName, true, false));
+        Files.createDirectories(PathBuilder.buildDataSetDirectoryPath(projectName, false, false));
     }
 
     public void writeInfoAsARF(List<VersionInfo> versionInfoList, Integer index, boolean training) throws IOException {
-        Path outputPath ;
-        if (training) {
-            outputPath = Path.of(trainPath.toString(), projectName.toUpperCase() + "_" + index + "_training.arf") ;
-        }
-        else {
-            outputPath = Path.of(testPath.toString(), projectName.toUpperCase() + "_" + index + "_testing.arf") ;
-        }
+        Path outputPath = PathBuilder.buildDataSetFilePath(projectName, training, false, index) ;
 
         File arfFile = new File(outputPath.toString()) ;
         try(Writer writer = new BufferedWriter(new FileWriter(arfFile))) {

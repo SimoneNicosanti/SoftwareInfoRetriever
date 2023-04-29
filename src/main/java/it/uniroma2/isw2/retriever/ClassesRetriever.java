@@ -2,12 +2,14 @@ package it.uniroma2.isw2.retriever;
 
 import it.uniroma2.isw2.model.ClassInfo;
 import it.uniroma2.isw2.model.VersionInfo;
-import it.uniroma2.isw2.utils.GitUtils;
-import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class ClassesRetriever {
 
     private void retrieveChangingCommitsForAllClasses(VersionInfo versionInfo) throws IOException {
         for (RevCommit commit : versionInfo.getVersionCommitList()) {
-            List<String> changedClasses = GitUtils.getChangedClassesByCommit(commit, repo) ;
+            List<String> changedClasses = getChangedClassesByCommit(commit, repo) ;
             for (ClassInfo classInfo : versionInfo.getClassInfoList()) {
                 for (String changedClass : changedClasses) {
                     if (changedClass.compareTo(classInfo.getName()) == 0) {
@@ -77,8 +79,8 @@ public class ClassesRetriever {
                 treeWalk.enterSubtree();
             }
             else {
-                if (treeWalk.getPathString().endsWith(".java") && !treeWalk.getPathString().contains("/test/")) {
-                    String className = treeWalk.getPathString();
+                String className = treeWalk.getPathString();
+                if (isValidClass(className)) {
                     ClassInfo classInfo = new ClassInfo(className);
                     classInfoList.add(classInfo);
                 }
@@ -89,6 +91,49 @@ public class ClassesRetriever {
         classInfoList.sort(Comparator.comparing(ClassInfo::getName)) ;
 
         return classInfoList ;
+    }
+
+    private List<String> getChangedClassesByCommit(RevCommit commit, Repository repo) throws IOException {
+        List<String> changedClassesList = new ArrayList<>() ;
+
+        if (commit.getParentCount() == 0) {
+            // Il commit che analizzo è il primo: devo vedere se la classe è creata in questo commit
+            TreeWalk treeWalk = new TreeWalk(repo) ;
+            treeWalk.reset(commit.getTree().getId());
+            treeWalk.setRecursive(false);
+
+            while (treeWalk.next()) {
+                String className = treeWalk.getPathString() ;
+                if (!treeWalk.isSubtree() && isValidClass(className)) {
+                    changedClassesList.add(treeWalk.getPathString()) ;
+                }
+            }
+
+            treeWalk.close();
+        }
+        else {
+            RevCommit prevCommit = commit.getParent(0);
+
+            DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE) ;
+            diffFormatter.setRepository(repo) ;
+            diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
+            List<DiffEntry> diffEntryList = diffFormatter.scan(prevCommit.getTree(), commit.getTree()) ;
+
+            for (DiffEntry diffEntry : diffEntryList) {
+                String className = diffEntry.getNewPath() ;
+                if (isValidClass(className)) {
+                    changedClassesList.add(diffEntry.getNewPath());
+                }
+            }
+
+            diffFormatter.close();
+        }
+
+        return changedClassesList ;
+    }
+
+    private boolean isValidClass(String className) {
+        return className.endsWith(".java") && !className.contains("/test/") ;
     }
 
 }

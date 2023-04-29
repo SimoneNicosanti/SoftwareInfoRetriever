@@ -1,9 +1,8 @@
-package it.uniroma2.isw2;
+package it.uniroma2.isw2.flows;
 
 import it.uniroma2.isw2.computer.BuggyClassesComputer;
-import it.uniroma2.isw2.computer.VersionsFixer;
 import it.uniroma2.isw2.computer.MetricsComputer;
-import it.uniroma2.isw2.computer.TicketFilter;
+import it.uniroma2.isw2.computer.VersionsFixer;
 import it.uniroma2.isw2.model.TicketInfo;
 import it.uniroma2.isw2.model.VersionInfo;
 import it.uniroma2.isw2.retriever.ClassesRetriever;
@@ -20,18 +19,19 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExecutionFlow {
+public class RetrievingFlow {
 
-    private ExecutionFlow() {}
+    private RetrievingFlow() {}
 
-    public static void execute(String projectPath, String projectName) throws IOException, URISyntaxException, GitAPIException {
+    public static int retrieve(String projectPath, String projectName) throws URISyntaxException, IOException, GitAPIException {
         FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
-        Repository repo = repositoryBuilder.setGitDir(new File(projectPath + projectName + "/.git")).build();
+        Repository repo = repositoryBuilder.setGitDir(new File(Path.of(projectPath, projectName, ".git").toString())).build();
         Git git = new Git(repo) ;
-        
+
         VersionRetriever versionRetriever = new VersionRetriever(projectName) ;
         List<VersionInfo> versionInfoList = versionRetriever.retrieveVersions() ;
 
@@ -44,25 +44,24 @@ public class ExecutionFlow {
         TicketRetriever ticketRetriever = new TicketRetriever(projectName) ;
         List<TicketInfo> ticketInfoList = ticketRetriever.retrieveBugTicket(versionInfoList) ;
 
-        TicketFilter filter = new TicketFilter(projectName) ;
-        List<TicketInfo> filteredList = filter.filterTicketByVersions(ticketInfoList, firstVersion.getVersionDate());
-
         VersionsFixer versionsFixer = new VersionsFixer() ;
-        versionsFixer.fixInjectedAndAffectedVersions(filteredList, versionInfoList);
+        versionsFixer.fixInjectedAndAffectedVersions(ticketInfoList, versionInfoList);
 
         ClassesRetriever classesRetriever = new ClassesRetriever(projectName, repo) ;
         classesRetriever.retrieveClassesForAllVersions(versionInfoList);
 
-        List<TicketInfo> completeTicketList = commitRetriever.retrieveFixCommitListForAllTickets(filteredList, firstVersion, lastVersion) ;
+        commitRetriever.retrieveFixCommitListForAllTickets(ticketInfoList, firstVersion, lastVersion) ;
 
         MetricsComputer metricsComputer = new MetricsComputer(projectName, repo, git) ;
-        metricsComputer.computeMetrics(versionInfoList, completeTicketList);
+        metricsComputer.computeMetrics(versionInfoList, ticketInfoList);
 
-        buildTrainingSets(projectName, versionInfoList, completeTicketList, repo, git) ;
-        buildTestingSets(projectName, versionInfoList, completeTicketList, repo, git) ;
+        buildTrainingSets(projectName, versionInfoList, ticketInfoList, repo, git) ;
+        buildTestingSets(projectName, versionInfoList, ticketInfoList, repo, git) ;
 
         git.close();
         repo.close();
+
+        return versionInfoList.size() / 2 ;
     }
 
     private static void buildTestingSets(String projectName, List<VersionInfo> versionInfoList, List<TicketInfo> ticketInfoList, Repository repo, Git git) throws IOException, GitAPIException {

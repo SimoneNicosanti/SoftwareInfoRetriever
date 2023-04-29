@@ -1,5 +1,4 @@
-.BOOKKEEPER/
-.STORM/
+output/
 
 .scannerwork/
 target/

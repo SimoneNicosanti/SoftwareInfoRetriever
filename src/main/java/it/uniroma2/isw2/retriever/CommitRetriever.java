@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -37,28 +38,26 @@ public class CommitRetriever {
         this.commitList.sort(Comparator.comparing(o -> o.getCommitterIdent().getWhen()));
     }
 
-    public List<TicketInfo> retrieveFixCommitListForAllTickets(List<TicketInfo> ticketInfoList, VersionInfo firstVersion, VersionInfo lastVersion) {
+    public void retrieveFixCommitListForAllTickets(List<TicketInfo> ticketInfoList, VersionInfo firstVersion, VersionInfo lastVersion) {
 
         // Mettere Log per controllare i Ticket che non hanno commit Associato
-        List<TicketInfo> filteredByCommitList = new ArrayList<>();
+
         Integer fixCommitNumber = 0;
         for (TicketInfo ticketInfo : ticketInfoList) {
             List<RevCommit> fixCommitList = retrieveFixCommitListForTicket(ticketInfo, firstVersion, lastVersion);
             ticketInfo.setFixCommitList(fixCommitList);
 
             fixCommitNumber = fixCommitNumber + fixCommitList.size();
-            if (!fixCommitList.isEmpty()) {
-                filteredByCommitList.add(ticketInfo);
-            }
         }
+
+        ticketInfoList.removeIf(ticketInfo -> ticketInfo.getFixCommitList().isEmpty()) ;
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Recupero Fix Commit per ").append(projectName.toUpperCase()).append("\n");
         stringBuilder.append("Numero di Commit di Fix >> ").append(fixCommitNumber).append("\n");
-        stringBuilder.append("Ticket Con Commit Associato >> ").append(filteredByCommitList.size());
+        stringBuilder.append("Ticket Con Commit Associato >> ").append(ticketInfoList.size());
         Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
 
-        return filteredByCommitList;
     }
 
     private List<RevCommit> retrieveFixCommitListForTicket(TicketInfo ticketInfo, VersionInfo firstVersion, VersionInfo lastVersion) {
@@ -110,6 +109,8 @@ public class CommitRetriever {
             versionInfo.setVersionCommitList(revCommits);
         }
 
+        // Se non ci sono commit associati alla versione allora rimuoviamo la versione
+        // Associamo poi gli indici alle versioni: queste sono tutte le versioni che manteniamo
         versionInfoList.removeIf(versionInfo -> versionInfo.getVersionCommitList().isEmpty()) ;
         for (int i = 0 ; i < versionInfoList.size() ; i++) {
             versionInfoList.get(i).setReleaseNumber(i);

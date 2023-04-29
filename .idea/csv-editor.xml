@@ -3,14 +3,7 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="/bookkeeper.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/storm.csv">
+        <entry key="/output/BOOKKEEPER/DataSet/Train/csv/BOOKKEEPER_5_train.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

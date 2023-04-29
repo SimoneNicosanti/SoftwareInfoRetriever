@@ -38,6 +38,7 @@ public class VersionRetriever {
         List<VersionInfo> versionInfoList = parseVersionArray(jsonVersionArray) ;
         versionInfoList.sort(Comparator.comparing(VersionInfo::getVersionDate));
 
+        //Indici provvisori assegnati: vengono modificati successivamente quando scartiamo le versioni senza commit associati
         for (int i = 0 ; i < versionInfoList.size() ; i++) {
             versionInfoList.get(i).setReleaseNumber(i);
         }
@@ -61,8 +62,7 @@ public class VersionRetriever {
     }
 
 
-    // TODO CI SONO VERSIONI CHE SONO RILASCIATE NELLA STESSA DATA!! CHE DOBBIAMO FARE ??
-    // TODO Prendere solo versioni che hanno released = true ??
+    //TODO Prendere solo versioni che hanno released = true ??
     private VersionInfo parseVersionInfo(JSONObject vesionJsonObject) {
         // Assumiamo valide solo le relaese che hanno released = true.
         if (vesionJsonObject.has("releaseDate") && vesionJsonObject.has("name") && vesionJsonObject.has("id")) {
