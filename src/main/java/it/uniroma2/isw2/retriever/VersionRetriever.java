@@ -1,6 +1,6 @@
 package it.uniroma2.isw2.retriever;
 
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,6 +26,8 @@ public class VersionRetriever {
 
     public List<VersionInfo> retrieveVersions() throws URISyntaxException, IOException {
 
+        Logger.getGlobal().log(Level.INFO, "{0}", "Recupero Versioni per " + projectName.toUpperCase());
+
         String urlString = "https://issues.apache.org/jira/rest/api/2/project/" + projectName.toUpperCase();
         URI uri = new URI(urlString);
         URL url = uri.toURL();
@@ -43,10 +45,6 @@ public class VersionRetriever {
             versionInfoList.get(i).setReleaseNumber(i);
         }
 
-        StringBuilder stringBuilder = new StringBuilder() ;
-        stringBuilder.append("Numero Versioni Per ").append(projectName.toUpperCase()).append(" >> ").append(versionInfoList.size()).append("\n") ;
-        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
-
         return versionInfoList ;
     }
 
@@ -62,7 +60,6 @@ public class VersionRetriever {
     }
 
 
-    //TODO Prendere solo versioni che hanno released = true ??
     private VersionInfo parseVersionInfo(JSONObject vesionJsonObject) {
         // Assumiamo valide solo le relaese che hanno released = true.
         if (vesionJsonObject.has("releaseDate") && vesionJsonObject.has("name") && vesionJsonObject.has("id")) {

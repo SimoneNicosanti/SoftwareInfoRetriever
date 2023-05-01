@@ -1,8 +1,8 @@
 package it.uniroma2.isw2.retriever;
 
 import it.uniroma2.isw2.builder.URLBuilder;
-import it.uniroma2.isw2.model.TicketInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.TicketInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 public class TicketRetriever {
 
     String projectName ;
@@ -27,14 +28,13 @@ public class TicketRetriever {
 
     public List<TicketInfo> retrieveBugTicket(List<VersionInfo> versionInfoList) throws IOException, URISyntaxException {
 
+        Logger.getGlobal().log(Level.INFO, "{0}", "Recupero Ticket Buggy per " + projectName.toUpperCase());
+
         List<TicketInfo> ticketInfoList = retrieveFromJson(versionInfoList) ;
 
         VersionInfo firstVersion = versionInfoList.get(0) ;
-        ticketInfoList.removeIf(ticketInfo -> !hasValidVersions(ticketInfo, firstVersion.getVersionDate())) ;
 
-        StringBuilder stringBuilder = new StringBuilder() ;
-        stringBuilder.append("Ticket Filtrati per ").append(projectName.toUpperCase()).append(" >> ").append(ticketInfoList.size()).append("\n") ;
-        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
+        ticketInfoList.removeIf(ticketInfo -> !hasValidVersions(ticketInfo, firstVersion.getVersionDate())) ;
 
         return ticketInfoList ;
     }
@@ -63,10 +63,6 @@ public class TicketRetriever {
             issuesNumber = jsonIssueArray.length() ;
             startPoint = startPoint + maxAmount ;
         } while (issuesNumber != 0) ;
-
-        StringBuilder stringBuilder = new StringBuilder() ;
-        stringBuilder.append("Ticket Totali per ").append(projectName.toUpperCase()).append(" >> ").append(ticketInfoList.size()).append("\n") ;
-        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
 
         return ticketInfoList ;
     }

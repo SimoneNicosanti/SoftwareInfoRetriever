@@ -1,7 +1,7 @@
 package it.uniroma2.isw2.retriever;
 
-import it.uniroma2.isw2.model.ClassInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.ClassInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 public class ClassesRetriever {
 
     private String projectName ;
@@ -30,19 +31,11 @@ public class ClassesRetriever {
 
     public void retrieveClassesForAllVersions(List<VersionInfo> versionInfoList) throws IOException {
         Logger.getGlobal().log(Level.INFO, "{0}", "Recupero Classi per " + projectName.toUpperCase());
-
         for (VersionInfo versionInfo : versionInfoList) {
             List<ClassInfo> classInfoList = retrieveClassesForVersion(versionInfo);
             versionInfo.setClassInfoList(classInfoList);
             retrieveChangingCommitsForAllClasses(versionInfo) ;
         }
-
-        StringBuilder stringBuilder = new StringBuilder() ;
-        stringBuilder.append("Numero di Classi per Versioni").append("\n") ;
-        for (VersionInfo versionInfo : versionInfoList) {
-            stringBuilder.append(versionInfo.getVersionName()).append(" >> ").append(versionInfo.getClassInfoList().size()).append("\n") ;
-        }
-        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder) ;
 
     }
 

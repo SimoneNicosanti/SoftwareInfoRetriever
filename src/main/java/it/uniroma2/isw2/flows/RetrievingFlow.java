@@ -3,12 +3,13 @@ package it.uniroma2.isw2.flows;
 import it.uniroma2.isw2.computer.BuggyClassesComputer;
 import it.uniroma2.isw2.computer.MetricsComputer;
 import it.uniroma2.isw2.computer.VersionsFixer;
-import it.uniroma2.isw2.model.TicketInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.TicketInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
 import it.uniroma2.isw2.retriever.ClassesRetriever;
 import it.uniroma2.isw2.retriever.CommitRetriever;
 import it.uniroma2.isw2.retriever.TicketRetriever;
 import it.uniroma2.isw2.retriever.VersionRetriever;
+import it.uniroma2.isw2.utils.LogWriter;
 import it.uniroma2.isw2.writer.ARFWriter;
 import it.uniroma2.isw2.writer.CSVWriter;
 import org.eclipse.jgit.api.Git;
@@ -34,23 +35,29 @@ public class RetrievingFlow {
 
         VersionRetriever versionRetriever = new VersionRetriever(projectName) ;
         List<VersionInfo> versionInfoList = versionRetriever.retrieveVersions() ;
+        LogWriter.writeVersionLog(projectName, versionInfoList, "VersionRetrieve");
 
         VersionInfo firstVersion = versionInfoList.get(0) ;
         VersionInfo lastVersion = versionInfoList.get(versionInfoList.size() - 1) ;
 
         CommitRetriever commitRetriever = new CommitRetriever(projectName, git, lastVersion.getVersionDate()) ;
         commitRetriever.retrieveCommitListForAllVersions(versionInfoList) ;
+        LogWriter.writeVersionLog(projectName, versionInfoList, "CommitForVersionRetrieve");
 
         TicketRetriever ticketRetriever = new TicketRetriever(projectName) ;
         List<TicketInfo> ticketInfoList = ticketRetriever.retrieveBugTicket(versionInfoList) ;
+        LogWriter.writeTicketLog(projectName, ticketInfoList, "TicketRetrieve");
 
-        VersionsFixer versionsFixer = new VersionsFixer() ;
+        VersionsFixer versionsFixer = new VersionsFixer(projectName) ;
         versionsFixer.fixInjectedAndAffectedVersions(ticketInfoList, versionInfoList);
+        LogWriter.writeTicketLog(projectName, ticketInfoList, "TicketVersionFix");
 
         ClassesRetriever classesRetriever = new ClassesRetriever(projectName, repo) ;
         classesRetriever.retrieveClassesForAllVersions(versionInfoList);
+        LogWriter.writeVersionLog(projectName, versionInfoList, "ClassesRetrieve");
 
         commitRetriever.retrieveFixCommitListForAllTickets(ticketInfoList, firstVersion, lastVersion) ;
+        LogWriter.writeTicketLog(projectName, ticketInfoList, "FixCommitRetrieve");
 
         MetricsComputer metricsComputer = new MetricsComputer(projectName, repo, git) ;
         metricsComputer.computeMetrics(versionInfoList, ticketInfoList);
@@ -75,6 +82,8 @@ public class RetrievingFlow {
             csvWriter.writeInfoAsCSV(List.of(versionInfoList.get(index + 1)), index, false);
             arfWriter.writeInfoAsARF(List.of(versionInfoList.get(index + 1)), index, false);
         }
+
+        LogWriter.writeBuggyClassesLog(projectName, versionInfoList);
 
     }
 

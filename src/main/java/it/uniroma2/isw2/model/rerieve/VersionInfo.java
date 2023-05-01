@@ -1,6 +1,6 @@
-package it.uniroma2.isw2.model;
+package it.uniroma2.isw2.model.rerieve;
 
-import org.eclipse.jgit.lib.Ref;
+import it.uniroma2.isw2.model.rerieve.ClassInfo;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.time.LocalDate;
@@ -24,6 +24,8 @@ public class VersionInfo {
         this.versionName = versionName ;
         this.versionDate = versionDate ;
         this.versionId = versionId ;
+        this.versionCommitList = new ArrayList<>() ;
+        this.classInfoList = new ArrayList<>() ;
     }
 
     public LocalDate getVersionDate() {
@@ -56,13 +58,6 @@ public class VersionInfo {
 
     public void setVersionId(String versionId) {
         this.versionId = versionId;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder() ;
-        stringBuilder.append("Number ").append(releaseNumber).append(" // ").append("Name ").append(versionName).append(" // ").append("Date ").append(versionDate.toString()) ;
-        return stringBuilder.toString() ;
     }
 
     public List<ClassInfo> getClassInfoList() {

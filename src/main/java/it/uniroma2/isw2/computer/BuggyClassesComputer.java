@@ -1,8 +1,8 @@
 package it.uniroma2.isw2.computer;
 
-import it.uniroma2.isw2.model.ClassInfo;
-import it.uniroma2.isw2.model.TicketInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.ClassInfo;
+import it.uniroma2.isw2.model.rerieve.TicketInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
 import org.eclipse.jgit.api.DiffCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;

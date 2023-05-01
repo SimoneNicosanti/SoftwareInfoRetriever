@@ -1,8 +1,8 @@
 package it.uniroma2.isw2.computer;
 
 import it.uniroma2.isw2.enums.ColdStartEnum;
-import it.uniroma2.isw2.model.TicketInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.TicketInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
 import it.uniroma2.isw2.retriever.TicketRetriever;
 import it.uniroma2.isw2.retriever.VersionRetriever;
 
@@ -11,14 +11,14 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ProportionComputer {
 
     private static final int THRESHOLD = 5 ;
     private final ArrayList<TicketInfo> proportionTicketList ;
     private Float coldStartProportion ;
+
+    private List<Float> coldStartArray ;
 
     public ProportionComputer() {
         this.proportionTicketList = new ArrayList<>() ;
@@ -84,12 +84,8 @@ public class ProportionComputer {
             coldStartValue = (0.5f) * (firstValue + secondValue) ;
         }
 
-        StringBuilder stringBuilder = new StringBuilder() ;
-        stringBuilder.append("\n").append("Array per ColdStart Proportion >> ").append(projectsProportionList).append("\n") ;
-        stringBuilder.append("Cold Start Value >> ").append(coldStartValue).append("\n") ;
-        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
-
         this.coldStartProportion = coldStartValue ;
+        this.coldStartArray = projectsProportionList ;
 
         return this.coldStartProportion;
     }
@@ -129,5 +125,13 @@ public class ProportionComputer {
          */
         // TODO AGGIUNGERE CONDIZIONE DI RIMOZIONE OPENING != FIX ?? SE TOGLI AGGIUNGI CONTROLLI DENOMINATORE DIVERSO DA ZERO
         return !ticketInfo.getOpeningVersion().getReleaseNumber().equals(ticketInfo.getFixVersion().getReleaseNumber()) && ticketInfo.getInjectedVersion() != null;
+    }
+
+    public float getColdStartProportionValue() {
+        return this.coldStartProportion ;
+    }
+
+    public List<Float> getColdStartArray() {
+        return this.coldStartArray ;
     }
 }

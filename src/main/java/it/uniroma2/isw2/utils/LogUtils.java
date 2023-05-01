@@ -1,7 +1,7 @@
 package it.uniroma2.isw2.utils;
 
-import it.uniroma2.isw2.model.TicketInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.TicketInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
 
 import java.util.List;
 import java.util.logging.Level;

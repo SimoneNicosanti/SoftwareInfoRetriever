@@ -1,7 +1,8 @@
 package it.uniroma2.isw2.writer;
 
-import it.uniroma2.isw2.model.ClassInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.ClassInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
+import it.uniroma2.isw2.utils.CSVUtils;
 import it.uniroma2.isw2.utils.PathBuilder;
 
 import java.io.*;
@@ -14,7 +15,7 @@ public class CSVWriter {
     private static final String SEPARATOR = "," ;
     private final String projectName ;
 
-    private static final String[] HEADER_STRING = {
+    private static final String[] HEADER_ARRAY = {
             "Version",
             "ClassName",
             "LinesOfCode",
@@ -42,23 +43,11 @@ public class CSVWriter {
 
         File csvFile = new File(outputPath.toString()) ;
         try(Writer writer = new BufferedWriter(new FileWriter(csvFile))) {
-            writeHeader(writer);
+            CSVUtils.writeHeader(writer, HEADER_ARRAY, SEPARATOR);
             for (VersionInfo versionInfo : versionInfoList) {
                 writeVersionInfo(writer, versionInfo);
             }
         }
-    }
-
-    private void writeHeader(Writer writer) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder() ;
-        for (int i = 0 ; i < HEADER_STRING.length ; i++) {
-            stringBuilder.append(HEADER_STRING[i]) ;
-            if (i != HEADER_STRING.length - 1) {
-                stringBuilder.append(SEPARATOR) ;
-            }
-        }
-        stringBuilder.append("\n") ;
-        writer.write(stringBuilder.toString());
     }
 
     private void writeVersionInfo(Writer writer, VersionInfo versionInfo) throws IOException {

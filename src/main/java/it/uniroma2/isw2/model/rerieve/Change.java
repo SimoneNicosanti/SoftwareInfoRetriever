@@ -1,4 +1,4 @@
-package it.uniroma2.isw2.model;
+package it.uniroma2.isw2.model.rerieve;
 
 public class Change {
 

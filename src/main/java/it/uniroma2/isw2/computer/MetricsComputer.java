@@ -1,9 +1,9 @@
 package it.uniroma2.isw2.computer;
 
-import it.uniroma2.isw2.model.Change;
-import it.uniroma2.isw2.model.ClassInfo;
-import it.uniroma2.isw2.model.TicketInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.Change;
+import it.uniroma2.isw2.model.rerieve.ClassInfo;
+import it.uniroma2.isw2.model.rerieve.TicketInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -38,7 +38,7 @@ public class MetricsComputer {
     }
 
     public void computeMetrics(List<VersionInfo> versionInfoList, List<TicketInfo> ticketInfoList) throws IOException {
-        Logger.getGlobal().log(Level.INFO, "{0}", "Calcolo Metriche per " + projectName.toUpperCase());
+        Logger.getGlobal().log(Level.INFO, "{0}", "Calcolo metriche per " + projectName.toUpperCase());
 
         for (VersionInfo versionInfo : versionInfoList) {
             if (versionInfo.getVersionCommitList().isEmpty()) {

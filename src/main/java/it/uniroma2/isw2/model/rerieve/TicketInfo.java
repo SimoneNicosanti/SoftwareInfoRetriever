@@ -1,4 +1,4 @@
-package it.uniroma2.isw2.model;
+package it.uniroma2.isw2.model.rerieve;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -9,7 +9,6 @@ import java.util.List;
 public class TicketInfo {
 
     private String ticketId ;
-
     private VersionInfo fixVersion ;
     private List<RevCommit> fixCommitList;
     private LocalDate createDate ;
@@ -92,59 +91,5 @@ public class TicketInfo {
         this.resolutionDate = resolutionDate;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder() ;
-        stringBuilder.append(ticketId).append(" // ").append("Created ").append(createDate.toString()).append(" // ").append("Resolution ").append(resolutionDate.toString()).append(" // ");
 
-        buildVersionPart(stringBuilder);
-        buildFixCommitPart(stringBuilder);
-
-        return stringBuilder.toString() ;
-    }
-
-    private void buildFixCommitPart(StringBuilder stringBuilder) {
-        stringBuilder.append("Fix Commit ") ;
-        if (fixCommitList == null) {
-            stringBuilder.append("NULL") ;
-        }
-        else {
-            stringBuilder.append("[") ;
-            for (int i = 0 ; i < fixCommitList.size() ; i++) {
-                stringBuilder.append(fixCommitList.get(i).getId()) ;
-                if (i != fixCommitList.size() - 1) {
-                    stringBuilder.append(", ") ;
-                }
-            }
-            stringBuilder.append("]") ;
-        }
-    }
-
-    private void buildVersionPart(StringBuilder stringBuilder) {
-        stringBuilder.append("Injected ").append(injectedVersion != null ? injectedVersion.getVersionName() : "NULL") ;
-        stringBuilder.append(" // " );
-
-        stringBuilder.append("Opening ").append(openingVersion != null ? openingVersion.getVersionName() : "NULL") ;
-        stringBuilder.append(" // " );
-
-        stringBuilder.append("Fix ").append(fixVersion != null ? fixVersion.getVersionName() : "NULL") ;
-        stringBuilder.append(" // ") ;
-
-        stringBuilder.append("Affected ") ;
-        if (affectedVersionList == null) {
-            stringBuilder.append("NULL") ;
-        }
-        else {
-            stringBuilder.append("[") ;
-            for (int i = 0 ; i < affectedVersionList.size() ; i++) {
-                VersionInfo versionInfo = affectedVersionList.get(i) ;
-                stringBuilder.append(versionInfo.getVersionName())  ;
-                if (i != affectedVersionList.size() - 1) {
-                    stringBuilder.append(", ") ;
-                }
-            }
-            stringBuilder.append("]") ;
-        }
-        stringBuilder.append(" // ") ;
-    }
 }

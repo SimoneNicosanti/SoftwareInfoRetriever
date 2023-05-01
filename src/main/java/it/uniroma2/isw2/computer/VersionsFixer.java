@@ -1,7 +1,8 @@
 package it.uniroma2.isw2.computer;
 
-import it.uniroma2.isw2.model.TicketInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.TicketInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
+import it.uniroma2.isw2.utils.LogWriter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -9,20 +10,29 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VersionsFixer {
 
     private final ProportionComputer proportionComputer ;
+    private final String projectName ;
 
-    public VersionsFixer() {
+    public VersionsFixer(String projectName) {
+        this.projectName = projectName ;
         this.proportionComputer = new ProportionComputer() ;
     }
 
     public void fixInjectedAndAffectedVersions(List<TicketInfo> ticketInfoList, List<VersionInfo> versionInfoList) throws URISyntaxException, IOException {
+        Logger.getGlobal().log(Level.INFO, "{0}", "Fix delle Injected e Affected Versions per " + projectName.toUpperCase());
+
         List<TicketInfo> sortedTicketList = new ArrayList<>(ticketInfoList) ;
         sortedTicketList.sort(Comparator.comparing(TicketInfo::getResolutionDate));
+
+        List<Float> proportionValuesArray = new ArrayList<>() ;
         for (TicketInfo ticketInfo : sortedTicketList) {
             Float proportionValue = proportionComputer.computeProportionForTicket(ticketInfo) ;
+            proportionValuesArray.add(proportionValue);
             if (proportionValue != null) {
                 // Se il valore di proportion non è null, allora il ticket non ha injectedVersion associata e la calcoliamo con proportion
                 setInjectedVersionForTicket(ticketInfo, versionInfoList, proportionValue);
@@ -36,17 +46,24 @@ public class VersionsFixer {
             ticketInfo.setAffectedVersionList(affectedVersionList);
         }
 
+        LogWriter.writeProportionLog(projectName, sortedTicketList, proportionValuesArray, proportionComputer.getColdStartProportionValue(), proportionComputer.getColdStartArray());
+
     }
 
     private void setInjectedVersionForTicket(TicketInfo ticketInfo, List<VersionInfo> versionInfoList, Float proportionValue) {
         Integer proportionIndex ;
         Integer openingNumber = ticketInfo.getOpeningVersion().getReleaseNumber() ;
         Integer fixNumber = ticketInfo.getFixVersion().getReleaseNumber() ;
+
+        /*
+         Scegliamo di prendere il floor: in questo modo avreo al più un falso positivo in più perché potremmo identificare
+         una versione come affected quando in realtà non lo era: avremo quindi una Recall più alta TODO Controlla
+         */
         if (Objects.equals(fixNumber, openingNumber)) {
-            proportionIndex = (int) (fixNumber - proportionValue) ;
+            proportionIndex = (int) Math.floor(fixNumber - proportionValue) ;
         }
         else {
-            proportionIndex = (int) (fixNumber - (fixNumber - openingNumber) * proportionValue) ;
+            proportionIndex = (int) Math.floor(fixNumber - (fixNumber - openingNumber) * proportionValue) ;
         }
         Integer index = Integer.max(0, proportionIndex) ;
 

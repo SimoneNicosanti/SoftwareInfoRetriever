@@ -1,7 +1,7 @@
 package it.uniroma2.isw2.retriever;
 
-import it.uniroma2.isw2.model.TicketInfo;
-import it.uniroma2.isw2.model.VersionInfo;
+import it.uniroma2.isw2.model.rerieve.TicketInfo;
+import it.uniroma2.isw2.model.rerieve.VersionInfo;
 import it.uniroma2.isw2.utils.DateUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -40,7 +39,7 @@ public class CommitRetriever {
 
     public void retrieveFixCommitListForAllTickets(List<TicketInfo> ticketInfoList, VersionInfo firstVersion, VersionInfo lastVersion) {
 
-        // Mettere Log per controllare i Ticket che non hanno commit Associato
+        Logger.getGlobal().log(Level.INFO, "{0}", "Recupero Fix Commit per " + projectName.toUpperCase());
 
         Integer fixCommitNumber = 0;
         for (TicketInfo ticketInfo : ticketInfoList) {
@@ -52,24 +51,20 @@ public class CommitRetriever {
 
         ticketInfoList.removeIf(ticketInfo -> ticketInfo.getFixCommitList().isEmpty()) ;
 
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Recupero Fix Commit per ").append(projectName.toUpperCase()).append("\n");
-        stringBuilder.append("Numero di Commit di Fix >> ").append(fixCommitNumber).append("\n");
-        stringBuilder.append("Ticket Con Commit Associato >> ").append(ticketInfoList.size());
-        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
-
     }
 
     private List<RevCommit> retrieveFixCommitListForTicket(TicketInfo ticketInfo, VersionInfo firstVersion, VersionInfo lastVersion) {
         List<RevCommit> fixCommitList = new ArrayList<>();
-        Pattern pattern = Pattern.compile(ticketInfo.getTicketId() + "+[^0-9]");
+        //Pattern pattern = Pattern.compile(ticketInfo.getTicketId() + "+[^0-9]");
+        Pattern pattern = Pattern.compile(ticketInfo.getTicketId() + "\\b");
         for (RevCommit commit : this.commitList) {
             LocalDate commitDate = DateUtils.dateToLocalDate(commit.getCommitterIdent().getWhen());
 
             // TODO Aggiungere condizione per cui il commit non può essere successivo alla resolution date del ticket ??
             boolean doesMatch = commitMatchesTicket(commit, pattern);
-            boolean compliantDates = lastVersion.getVersionDate().isAfter(commitDate) && firstVersion.getVersionDate().isBefore(commitDate);
-            if (doesMatch && compliantDates) {
+            boolean compliantVersionDates = lastVersion.getVersionDate().isAfter(commitDate) && firstVersion.getVersionDate().isBefore(commitDate);
+            boolean compliantTicketDates = !commitDate.isBefore(ticketInfo.getCreateDate()) && !commitDate.isAfter(ticketInfo.getResolutionDate()) ;
+            if (doesMatch && compliantVersionDates && compliantTicketDates) {
                 fixCommitList.add(commit);
             }
         }
@@ -82,18 +77,13 @@ public class CommitRetriever {
         String commitMessage = commit.getFullMessage();
 
         Matcher matcher = pattern.matcher(commitMessage);
-        boolean matchFound = matcher.find();
 
-        int firstIndex = commitMessage.indexOf(projectName + "-");
-        if (firstIndex != -1 && matchFound) {
-            int matchIndex = matcher.start();
-            return matchIndex == firstIndex;
-        }
-        return false;
+        return matcher.find();
     }
 
     public void retrieveCommitListForAllVersions(List<VersionInfo> versionInfoList) {
-        Logger.getGlobal().log(Level.INFO, "{0}", "Recupero commit per Versioni di " + projectName.toUpperCase());
+
+        Logger.getGlobal().log(Level.INFO, "{0}", "Recupero Commit per Versioni di " + projectName.toUpperCase());
 
         for (int i = 0; i < versionInfoList.size(); i++) {
             VersionInfo versionInfo = versionInfoList.get(i);
@@ -116,13 +106,6 @@ public class CommitRetriever {
             versionInfoList.get(i).setReleaseNumber(i);
         }
 
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\n").append("Commit Totali >> ").append(this.commitList.size());
-        stringBuilder.append("\n").append("Commit Per Versione").append("\n");
-        for (VersionInfo versionInfo : versionInfoList) {
-            stringBuilder.append(versionInfo.getReleaseNumber()).append(" >> ").append(versionInfo.getVersionDate()).append(" >> ").append(versionInfo.getVersionName()).append(" >> ").append(versionInfo.getVersionCommitList().size()).append("\n");
-        }
-        Logger.getGlobal().log(Level.INFO, "{0}", stringBuilder);
     }
 
     private List<RevCommit> retrieveCommitListForVersion(LocalDate versionDate, LocalDate prevVersionDate) {
@@ -136,7 +119,8 @@ public class CommitRetriever {
                     versionCommitList.add(commit);
                 }
             }
-        } else {
+        }
+        else {
             for (RevCommit commit : this.commitList) {
                 LocalDate commitDate = DateUtils.dateToLocalDate(commit.getCommitterIdent().getWhen());
 
