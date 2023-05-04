@@ -46,7 +46,7 @@ public class VersionsFixer {
             ticketInfo.setAffectedVersionList(affectedVersionList);
         }
 
-        LogWriter.writeProportionLog(projectName, sortedTicketList, proportionValuesArray, proportionComputer.getColdStartProportionValue(), proportionComputer.getColdStartArray());
+        LogWriter.writeProportionLog(projectName, sortedTicketList, proportionValuesArray, proportionComputer.getColdStartProportionValue(), proportionComputer.getColdStartArray(), proportionComputer.getProportionTicketList());
 
     }
 

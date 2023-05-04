@@ -82,7 +82,7 @@ public class LogWriter {
         writer.close();
     }
 
-    public static void writeProportionLog(String projectName, List<TicketInfo> ticketInfoList, List<Float> proportionValues, float coldStartValue, List<Float> coldStartArray) throws IOException {
+    public static void writeProportionLog(String projectName, List<TicketInfo> ticketInfoList, List<Float> proportionValues, float coldStartValue, List<Float> coldStartArray, List<TicketInfo> proportionTicketList) throws IOException {
         Files.createDirectories(PathBuilder.buildLogPath(projectName)) ;
         Writer writer = new BufferedWriter(new FileWriter(Path.of(PathBuilder.buildLogPath(projectName).toString(), "Proportion").toString())) ;
 
@@ -94,7 +94,19 @@ public class LogWriter {
         for (int i = 0 ; i < ticketInfoList.size() ; i++ ) {
             TicketInfo ticketInfo = ticketInfoList.get(i) ;
             stringBuilder.append("Ticket ID >> ").append(ticketInfo.getTicketId()).append("\n") ;
-            stringBuilder.append("Proportion Value >> ").append(proportionValues.get(i) == null ? "Null" : proportionValues.get(i)).append("\n") ;
+            stringBuilder.append("Proportion Value >> ") ;
+
+            boolean used = false ;
+            for (TicketInfo proportionTicket : proportionTicketList) {
+                if (proportionTicket.getTicketId().compareTo(ticketInfo.getTicketId()) == 0) {
+                    stringBuilder.append("USED").append("\n") ;
+                    used = true ;
+                    break ;
+                }
+            }
+            if (!used) {
+                stringBuilder.append(proportionValues.get(i) == null ? "NULL" : proportionValues.get(i)).append("\n") ;
+            }
 
             stringBuilder.append(SEPARATOR).append("\n\n") ;
         }

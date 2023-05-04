@@ -55,7 +55,6 @@ public class CommitRetriever {
 
     private List<RevCommit> retrieveFixCommitListForTicket(TicketInfo ticketInfo, VersionInfo firstVersion, VersionInfo lastVersion) {
         List<RevCommit> fixCommitList = new ArrayList<>();
-        //Pattern pattern = Pattern.compile(ticketInfo.getTicketId() + "+[^0-9]");
         Pattern pattern = Pattern.compile(ticketInfo.getTicketId() + "\\b");
         for (RevCommit commit : this.commitList) {
             LocalDate commitDate = DateUtils.dateToLocalDate(commit.getCommitterIdent().getWhen());

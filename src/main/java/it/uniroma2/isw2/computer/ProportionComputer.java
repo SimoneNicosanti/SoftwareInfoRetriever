@@ -17,7 +17,6 @@ public class ProportionComputer {
     private static final int THRESHOLD = 5 ;
     private final ArrayList<TicketInfo> proportionTicketList ;
     private Float coldStartProportion ;
-
     private List<Float> coldStartArray ;
 
     public ProportionComputer() {
@@ -48,13 +47,19 @@ public class ProportionComputer {
 
     private Float computeIncrementalProportion(List<TicketInfo> proportionTicketList) {
         // TODO Ragionare su impatto su precision e recall calcolando proportion in questo modo
-        Float incrementProportion = 0f ;
-        Integer size = proportionTicketList.size() ;
+        float incrementProportion = 0f ;
+        int size = proportionTicketList.size() ;
         for (TicketInfo ticketInfo : proportionTicketList) {
             Integer fixReleaseNumber = ticketInfo.getFixVersion().getReleaseNumber();
             Integer openingReleaseNumber = ticketInfo.getOpeningVersion().getReleaseNumber();
             Integer injectedReleaseNumber = ticketInfo.getInjectedVersion().getReleaseNumber();
-            Float proportion = (((float) fixReleaseNumber) - injectedReleaseNumber) / (fixReleaseNumber - openingReleaseNumber);
+
+            float num = ((float) fixReleaseNumber) - injectedReleaseNumber ;
+            float den = ((float) fixReleaseNumber - openingReleaseNumber) ;
+            if (den == 0) {
+                den = 1 ;
+            }
+            float proportion = num / den ;
             incrementProportion += proportion;
         }
         return incrementProportion / size ;
@@ -113,7 +118,6 @@ public class ProportionComputer {
                 proportionFilteredList.add(ticketInfo) ;
             }
         }
-
         return proportionFilteredList ;
     }
 
@@ -123,8 +127,7 @@ public class ProportionComputer {
         * Ha Injected Version
         * Opening e Fix Version sono diverse per evitare che il denominatore sia nullo
          */
-        // TODO AGGIUNGERE CONDIZIONE DI RIMOZIONE OPENING != FIX ?? SE TOGLI AGGIUNGI CONTROLLI DENOMINATORE DIVERSO DA ZERO
-        return !ticketInfo.getOpeningVersion().getReleaseNumber().equals(ticketInfo.getFixVersion().getReleaseNumber()) && ticketInfo.getInjectedVersion() != null;
+        return /*!ticketInfo.getOpeningVersion().getReleaseNumber().equals(ticketInfo.getFixVersion().getReleaseNumber()) && */ticketInfo.getInjectedVersion() != null;
     }
 
     public float getColdStartProportionValue() {
@@ -133,5 +136,9 @@ public class ProportionComputer {
 
     public List<Float> getColdStartArray() {
         return this.coldStartArray ;
+    }
+
+    public List<TicketInfo> getProportionTicketList() {
+        return proportionTicketList ;
     }
 }
