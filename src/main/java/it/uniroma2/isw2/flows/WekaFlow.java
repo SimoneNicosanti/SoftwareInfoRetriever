@@ -25,8 +25,7 @@ public class WekaFlow {
         EvaluationWriter evaluationWriter = new EvaluationWriter(projectName) ;
 
         List<WekaEvaluation> wekaEvaluationList = new ArrayList<>() ;
-
-
+        
         for (int index = 0 ; index < maxIndex ; index++) {
             Logger.getGlobal().log(Level.INFO, "{0}", "Valutazione Versione " + index + "\n");
             DataSource trainSource = new DataSource(PathBuilder.buildTrainingDataSetPath(projectName, index).toString());
@@ -35,7 +34,7 @@ public class WekaFlow {
             int trueNumber = trainingSet.attributeStats(trainingSet.numAttributes() - 1).nominalCounts[0] ;
             int falseNumber = trainingSet.attributeStats(trainingSet.numAttributes() - 1).nominalCounts[1] ;
 
-            Instances testingSet = getTestingSet(projectName, index + 1, maxIndex) ;
+            Instances testingSet = getTestingSet(projectName, index, maxIndex) ;
             if (testingSet == null) {
                 break;
             }

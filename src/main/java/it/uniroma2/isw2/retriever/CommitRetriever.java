@@ -27,8 +27,6 @@ public class CommitRetriever {
         this.projectName = projectName.toUpperCase();
         this.commitList = new ArrayList<>();
 
-        System.out.println(git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call()) ;
-
         Iterable<RevCommit> commitIterable = git.log().call();
         for (RevCommit commit : commitIterable) {
             LocalDate commitDate = DateUtils.dateToLocalDate(commit.getCommitterIdent().getWhen());

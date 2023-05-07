@@ -1,7 +1,6 @@
 package it.uniroma2.isw2.writer;
 
 import it.uniroma2.isw2.model.weka.WekaEvaluation;
-import it.uniroma2.isw2.utils.CSVUtils;
 import it.uniroma2.isw2.utils.PathBuilder;
 import java.io.*;
 import java.nio.file.Files;

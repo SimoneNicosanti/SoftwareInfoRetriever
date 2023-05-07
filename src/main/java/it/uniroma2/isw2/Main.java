@@ -9,7 +9,7 @@ public class Main {
 
     private enum ProjectEnum {
         BOOKKEEPER,
-        //STORM
+        STORM
     }
 
     private static final Path PROJECT_PATH = Path.of("/home", "simone", "Scrivania", "University", "ISW2", "Projects") ;
