@@ -4,6 +4,7 @@ import it.uniroma2.isw2.model.rerieve.TicketInfo;
 import it.uniroma2.isw2.model.rerieve.VersionInfo;
 import it.uniroma2.isw2.utils.DateUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -25,6 +26,8 @@ public class CommitRetriever {
     public CommitRetriever(String projectName, Git git, LocalDate lastVersionDate) throws IOException, GitAPIException {
         this.projectName = projectName.toUpperCase();
         this.commitList = new ArrayList<>();
+
+        System.out.println(git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call()) ;
 
         Iterable<RevCommit> commitIterable = git.log().call();
         for (RevCommit commit : commitIterable) {

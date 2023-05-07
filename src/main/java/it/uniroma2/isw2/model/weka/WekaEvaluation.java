@@ -1,6 +1,5 @@
 package it.uniroma2.isw2.model.weka;
 
-import it.uniroma2.isw2.writer.EvaluationWriter;
 import weka.classifiers.Evaluation;
 
 public class WekaEvaluation {

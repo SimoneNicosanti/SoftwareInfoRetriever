@@ -1,7 +1,5 @@
 package it.uniroma2.isw2.builder;
 
-import org.json.JSONArray;
-
 import java.util.ArrayList;
 
 public class URLBuilder {

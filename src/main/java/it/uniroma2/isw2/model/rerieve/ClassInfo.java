@@ -1,8 +1,6 @@
 package it.uniroma2.isw2.model.rerieve;
 
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevCommitList;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +13,10 @@ public class ClassInfo {
     private int addedLoc ;
     private int maxAddedLoc ;
     private float avgAddedLoc ;
+
+    private float removedLoc ;
+    private float maxRemovedLoc ;
+    private float avgRemovedLoc ;
     private int touchedLoc ;
     private int churn ;
     private int maxChurn ;
@@ -140,5 +142,29 @@ public class ClassInfo {
 
     public void setNumberDefectsFixed(int numberDefectsFixed) {
         this.numberDefectsFixed = numberDefectsFixed;
+    }
+
+    public void setRemovedLoc(int totalRemoved) {
+        this.removedLoc = totalRemoved ;
+    }
+
+    public float getRemovedLoc() {
+        return this.removedLoc ;
+    }
+
+    public float getMaxRemovedLoc() {
+        return maxRemovedLoc;
+    }
+
+    public void setMaxRemovedLoc(float maxRemovedLoc) {
+        this.maxRemovedLoc = maxRemovedLoc;
+    }
+
+    public float getAvgRemovedLoc() {
+        return avgRemovedLoc;
+    }
+
+    public void setAvgRemovedLoc(float avgRemovedLoc) {
+        this.avgRemovedLoc = avgRemovedLoc;
     }
 }

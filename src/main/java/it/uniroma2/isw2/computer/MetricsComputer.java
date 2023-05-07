@@ -15,7 +15,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -68,13 +67,14 @@ public class MetricsComputer {
             }
         }
 
-        setAddedLocMetricsForClass(classInfo, changeList, classInfo.getModifierCommitList().size()) ;
+        setAddedAndRemovedMetricsForClass(classInfo, changeList, classInfo.getModifierCommitList().size()) ;
         setTouchedLocMetricsForClass(classInfo, changeList) ;
         setChurnMetricsForClass(classInfo, changeList, classInfo.getModifierCommitList().size()) ;
         setAuthorMetricsForClass(classInfo, changeList) ;
         setNumberOfRevisionMetricsForClass(classInfo, changeList) ;
         setNumberOfDefectsFixed(classInfo, ticketInfoList) ;
     }
+
 
     private void setNumberOfDefectsFixed(ClassInfo classInfo, List<TicketInfo> ticketInfoList) {
         int numberOfDefectsFixed = 0 ;
@@ -111,6 +111,8 @@ public class MetricsComputer {
 
         String[] lines = content.split("\n") ;
         int loc = lines.length ;
+
+        treeWalk.close();
 
         classInfo.setLoc(loc);
     }
@@ -162,25 +164,40 @@ public class MetricsComputer {
         classInfo.setTouchedLoc(totalTouched);
     }
 
-    private void setAddedLocMetricsForClass(ClassInfo classInfo, List<Change> changeList, Integer revisionNumber) {
+    private void setAddedAndRemovedMetricsForClass(ClassInfo classInfo, List<Change> changeList, Integer revisionNumber) {
         if (revisionNumber == 0) {
             return ;
         }
 
         int totalAdded = 0;
+        int totalDeleted = 0 ;
+
         int maxAdded = 0 ;
+        int maxDeleted = 0;
+
         float avgAdded ;
+        float avgDeleted ;
+
         for (Change change : changeList) {
             totalAdded += change.getAddedLoc() ;
+            totalDeleted += change.getDeletedLoc() ;
             if (maxAdded < change.getAddedLoc()) {
                 maxAdded = change.getAddedLoc() ;
             }
+            if (maxDeleted < change.getDeletedLoc()) {
+                maxDeleted = change.getDeletedLoc() ;
+            }
         }
         avgAdded = ((float) totalAdded) / revisionNumber ;
+        avgDeleted = ((float) totalDeleted) / revisionNumber ;
 
         classInfo.setAddedLoc(totalAdded);
         classInfo.setMaxAddedLoc(maxAdded);
         classInfo.setAvgAddedLoc(avgAdded);
+
+        classInfo.setRemovedLoc(totalDeleted);
+        classInfo.setMaxRemovedLoc(maxDeleted);
+        classInfo.setAvgRemovedLoc(avgDeleted);
     }
 
     public Change computeMetricsInRevision(ClassInfo classInfo, RevCommit commit) throws IOException {

@@ -1,6 +1,5 @@
 package it.uniroma2.isw2.model.rerieve;
 
-import it.uniroma2.isw2.model.rerieve.ClassInfo;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.time.LocalDate;
