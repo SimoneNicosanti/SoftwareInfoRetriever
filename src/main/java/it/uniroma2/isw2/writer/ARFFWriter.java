@@ -27,7 +27,8 @@ public class ARFFWriter {
         writer.write(DATA);
         writer.write("\n");
 
-        for (List<String> lineInfos : lineInfoArray) {
+        for (int lineIndex = 0 ; lineIndex < lineInfoArray.size() ; lineIndex++) {
+            List<String> lineInfos = lineInfoArray.get(lineIndex) ;
             StringBuilder lineBuilder = new StringBuilder() ;
             for (int i = 0 ; i < lineInfos.size() ; i++) {
                 String info = lineInfos.get(i) ;
@@ -36,7 +37,9 @@ public class ARFFWriter {
                     lineBuilder.append(SEPARATOR) ;
                 }
             }
-            lineBuilder.append("\n") ;
+            if (lineIndex != lineInfoArray.size() - 1) {
+                lineBuilder.append("\n") ;
+            }
 
             writer.write(lineBuilder.toString());
         }
