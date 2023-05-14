@@ -50,8 +50,6 @@ public class WekaFlow {
                 Classifier classifier = wekaClassifier.getClassifier();
                 classifier.buildClassifier(trainingSet);
 
-                WekaFilter filter = wekaClassifier.getWekaFilter() ;
-
                 Evaluation evaluation = new Evaluation(testingSet) ;
                 evaluation.evaluateModel(classifier, testingSet) ;
 

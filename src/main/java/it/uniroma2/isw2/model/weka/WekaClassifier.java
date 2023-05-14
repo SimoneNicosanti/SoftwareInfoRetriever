@@ -26,17 +26,14 @@ public class WekaClassifier {
     }
 
     public String getFilterName() {
-        if (wekaFilter == null) {
-            return "NotSet" ;
-        }
-        return wekaFilter.getFilterName() + "(" + wekaFilter.getDirectionString() + ")";
+        return String.valueOf(wekaFilter != null);
     }
 
-    public String getSamplerName() {
+    public String getSamplingType() {
         if (wekaSampler == null) {
             return "NotSet" ;
         }
-        return wekaSampler.getSamplerName();
+        return wekaSampler.getSamplingType();
     }
 
     public void setClassifier(Classifier classifier) {

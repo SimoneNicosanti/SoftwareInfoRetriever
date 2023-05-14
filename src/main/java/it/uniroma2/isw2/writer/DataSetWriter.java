@@ -17,9 +17,11 @@ public class DataSetWriter {
             "AddedLOC",
             "MaxAddedLOC",
             "AvgAddedLOC",
-            //"RemovedLoc",
-            //"MaxRemovedLoc",
-            //"AvgRemovedLoc",
+            /*
+            "RemovedLoc",
+            "MaxRemovedLoc",
+            "AvgRemovedLoc",
+             */
             "TouchedLOC",
             "Churn",
             "MaxChurn",
@@ -136,13 +138,10 @@ public class DataSetWriter {
                 Float.toString(classInfo.getMaxAddedLoc()),
                 Float.toString(classInfo.getAvgAddedLoc()),
                 /*
-                + classInfo.getRemovedLoc()
-                ,
-                + classInfo.getMaxRemovedLoc()
-                ,
-                + classInfo.getAvgRemovedLoc()
-                ,
-                 */
+                Float.toString(classInfo.getRemovedLoc()) ,
+                Float.toString(classInfo.getMaxRemovedLoc()) ,
+                Float.toString(classInfo.getAvgRemovedLoc()) ,
+                */
                 Float.toString(classInfo.getTouchedLoc()),
                 Float.toString(classInfo.getChurn()),
                 Float.toString(classInfo.getMaxChurn()),
